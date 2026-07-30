@@ -115,11 +115,10 @@ body {
 .switch-auth a { color: #4f46e5; text-decoration: none; font-weight: 700; }
 
 /* APP LAYOUT */
-.app-container { display: flex; min-height: 100vh; }
+.app-container { display: none; min-height: 100vh; }
 .sidebar {
   width: 280px; background: var(--sidebar-bg); color: #fff; padding: 36px 24px; display: flex;
   flex-direction: column; justify-content: space-between; border-right: 1px solid var(--border-color);
-  flex-shrink: 0;
 }
 .sidebar-brand {
   font-size: 26px; font-weight: 800;
@@ -210,93 +209,6 @@ tr:hover td { background: rgba(0,0,0,0.01); }
 .btn-edit { background: #e0f2fe; color: #0284c7; margin-right: 6px; }
 .btn-del { background: #ffe4e6; color: #e11d48; }
 .btn-pay { background: #d1fae5; color: #059669; margin-right: 6px; }
-
-/* ===================================================
-   RESPONSIVIDADE (ADAPTAÇÃO PARA DISPOSITIVOS MÓVEIS)
-   =================================================== */
-
-/* Tablet e Telas Médias (Até 1024px) */
-@media (max-width: 1024px) {
-  .app-container {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    width: 100%;
-    border-right: none;
-    border-bottom: 1px solid var(--border-color);
-    padding: 20px 24px;
-  }
-
-  .sidebar-brand {
-    margin-bottom: 20px;
-  }
-
-  .sidebar-nav {
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    padding-bottom: 10px;
-  }
-
-  .sidebar-nav .nav-item {
-    white-space: nowrap;
-    margin-bottom: 0;
-  }
-
-  .main-content {
-    padding: 24px;
-  }
-}
-
-/* Celulares (Até 768px) */
-@media (max-width: 768px) {
-  .header-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-
-  .month-filter-box {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .cards-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .panel-card {
-    padding: 20px;
-    overflow-x: auto;
-  }
-
-  table {
-    min-width: 600px;
-  }
-
-  .auth-box {
-    padding: 24px;
-  }
-
-  .table-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-
-  .export-actions {
-    width: 100%;
-  }
-
-  .btn-export {
-    flex: 1;
-  }
-}
 
 /* IMPRESSÃO */
 @media print {
