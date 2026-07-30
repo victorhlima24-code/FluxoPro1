@@ -14,11 +14,21 @@ const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 let currentUser = null;
 let transactions = [];
 let bills = [];
+let categories = [
+  { name: 'Salário', limit: 0 },
+  { name: 'Alimentação', limit: 800 },
+  { name: 'Moradia', limit: 1500 },
+  { name: 'Investimentos', limit: 1000 },
+  { name: 'Lazer', limit: 400 },
+  { name: 'Geral', limit: 500 }
+];
+
 let barChartInstance = null;
 let doughnutChartInstance = null;
+let compareChartInstance = null;
 let pendingDeleteAction = null;
 
-// --- MÁSCARAS DE ENTRADA (CPF/CNPJ e Telefone) ---
+// --- MÁSCARAS ---
 function maskDoc(value) {
   return value
     .replace(/\D/g, '')
@@ -39,16 +49,11 @@ function applyMasks() {
   const docInputs = [document.getElementById('reg-doc'), document.getElementById('edit-doc')];
   const phoneInputs = [document.getElementById('reg-phone'), document.getElementById('edit-phone')];
 
-  docInputs.forEach(input => {
-    input?.addEventListener('input', (e) => e.target.value = maskDoc(e.target.value));
-  });
-
-  phoneInputs.forEach(input => {
-    input?.addEventListener('input', (e) => e.target.value = maskPhone(e.target.value));
-  });
+  docInputs.forEach(input => input?.addEventListener('input', (e) => e.target.value = maskDoc(e.target.value)));
+  phoneInputs.forEach(input => input?.addEventListener('input', (e) => e.target.value = maskPhone(e.target.value)));
 }
 
-// --- TOAST NOTIFICATION ---
+// --- NOTIFICAÇÃO & MODAL ---
 function notify(text) {
   const container = document.getElementById('toast-container');
   if (!container) return;
@@ -59,13 +64,11 @@ function notify(text) {
   setTimeout(() => toast.remove(), 3000);
 }
 
-// --- MODAL CUSTOMIZADO ---
 function showModal(title, message, onConfirm) {
   const modal = document.getElementById('custom-modal');
   document.getElementById('modal-title').innerText = title;
   document.getElementById('modal-message').innerText = message;
   modal.style.display = 'flex';
-
   pendingDeleteAction = onConfirm;
 }
 
@@ -74,17 +77,28 @@ function hideModal() {
   pendingDeleteAction = null;
 }
 
-// --- EVENTOS E MONITORAMENTO DE SESSÃO ---
+// --- EVENTOS E SESSÃO ---
 document.addEventListener('DOMContentLoaded', () => {
   setupEventListeners();
   applyMasks();
 
   _supabase.auth.onAuthStateChange((event, session) => {
+    if (event === 'PASSWORD_RECOVERY') {
+      document.getElementById('auth-screen').style.display = 'flex';
+      document.getElementById('login-box').style.display = 'none';
+      document.getElementById('forgot-box').style.display = 'none';
+      document.getElementById('reset-password-box').style.display = 'block';
+      return;
+    }
+
     if (session && session.user) {
       currentUser = {
         id: session.user.id,
         email: session.user.email,
-        ...session.user.user_metadata
+        name: session.user.user_metadata?.name || session.user.user_metadata?.full_name,
+        doc: session.user.user_metadata?.doc,
+        phone: session.user.user_metadata?.phone,
+        profile: session.user.user_metadata?.profile || 'Pessoal'
       };
       iniciarSistema();
     } else {
@@ -96,14 +110,13 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function setupEventListeners() {
-  // Modal Buttons
   document.getElementById('modal-btn-cancel')?.addEventListener('click', hideModal);
   document.getElementById('modal-btn-confirm')?.addEventListener('click', () => {
     if (pendingDeleteAction) pendingDeleteAction();
     hideModal();
   });
 
-  // Alternar Login / Cadastro
+  // Auth Switching
   document.getElementById('go-to-register')?.addEventListener('click', (e) => {
     e.preventDefault();
     document.getElementById('login-box').style.display = 'none';
@@ -116,9 +129,22 @@ function setupEventListeners() {
     document.getElementById('login-box').style.display = 'block';
   });
 
+  document.getElementById('go-to-forgot')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('login-box').style.display = 'none';
+    document.getElementById('forgot-box').style.display = 'block';
+  });
+
+  document.getElementById('go-to-login-from-forgot')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('forgot-box').style.display = 'none';
+    document.getElementById('login-box').style.display = 'block';
+  });
+
   // Navegação
   document.getElementById('nav-dash')?.addEventListener('click', () => switchTab('section-dashboard', 'nav-dash'));
   document.getElementById('nav-bills')?.addEventListener('click', () => switchTab('section-bills', 'nav-bills'));
+  document.getElementById('nav-categories')?.addEventListener('click', () => switchTab('section-categories', 'nav-categories'));
   document.getElementById('nav-profile')?.addEventListener('click', () => switchTab('section-profile', 'nav-profile'));
   document.getElementById('nav-support')?.addEventListener('click', () => switchTab('section-support', 'nav-support'));
 
@@ -132,9 +158,13 @@ function setupEventListeners() {
   // Formulários
   document.getElementById('form-register')?.addEventListener('submit', handleRegister);
   document.getElementById('form-login')?.addEventListener('submit', handleLogin);
-  document.getElementById('btn-logout')?.addEventListener('click', handleLogout);
+  document.getElementById('btn-google-login')?.addEventListener('click', handleGoogleLogin);
+  document.getElementById('form-forgot')?.addEventListener('submit', handleForgotPassword);
+  document.getElementById('form-reset-password')?.addEventListener('submit', handleResetPassword);
+  document.getElementById('btn-logout')?.addEventListener('click', () => _supabase.auth.signOut());
   document.getElementById('form-transaction')?.addEventListener('submit', handleSaveTransaction);
   document.getElementById('form-bill')?.addEventListener('submit', handleSaveBill);
+  document.getElementById('form-add-category')?.addEventListener('submit', handleAddCategory);
   document.getElementById('form-update-profile')?.addEventListener('submit', handleUpdateProfile);
 
   // Filtros
@@ -151,12 +181,10 @@ function setupEventListeners() {
     renderizarDados();
   });
 
-  // Exportações
   document.getElementById('btn-export')?.addEventListener('click', exportarCSV);
   document.getElementById('btn-print-pdf')?.addEventListener('click', () => window.print());
 }
 
-// --- TAB SWITCH ---
 function switchTab(sectionId, navId) {
   document.querySelectorAll('.page-section').forEach(sec => sec.style.display = 'none');
   document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
@@ -165,49 +193,7 @@ function switchTab(sectionId, navId) {
   document.getElementById(navId).classList.add('active');
 
   if (sectionId === 'section-bills') carregarContasNuvem();
-}
-
-// --- AUTENTICAÇÃO ---
-async function handleRegister(e) {
-  e.preventDefault();
-  const name = document.getElementById('reg-name').value;
-  const email = document.getElementById('reg-email').value;
-  const doc = document.getElementById('reg-doc').value;
-  const phone = document.getElementById('reg-phone').value;
-  const profile = document.getElementById('reg-profile').value;
-  const password = document.getElementById('reg-password').value;
-
-  const { data, error } = await _supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: { name, doc, phone, profile }
-    }
-  });
-
-  if (error) return alert('Erro no cadastro: ' + error.message);
-
-  notify('Conta criada com sucesso! Faça login.');
-  document.getElementById('register-box').style.display = 'none';
-  document.getElementById('login-box').style.display = 'block';
-  document.getElementById('form-register').reset();
-}
-
-async function handleLogin(e) {
-  e.preventDefault();
-  const email = document.getElementById('login-email').value;
-  const password = document.getElementById('login-password').value;
-
-  const { error } = await _supabase.auth.signInWithPassword({
-    email,
-    password
-  });
-
-  if (error) return alert('Falha no login: ' + error.message);
-}
-
-async function handleLogout() {
-  await _supabase.auth.signOut();
+  if (sectionId === 'section-categories') renderizarCategorias();
 }
 
 function iniciarSistema() {
@@ -222,10 +208,71 @@ function iniciarSistema() {
   document.getElementById('edit-profile').value = currentUser.profile || 'Pessoal';
 
   document.getElementById('trans-date').valueAsDate = new Date();
+  
+  atualizarSelectCategorias();
   carregarTransacoesNuvem();
 }
 
-// --- PERFIL ---
+// --- AUTENTICAÇÃO ---
+async function handleRegister(e) {
+  e.preventDefault();
+  const name = document.getElementById('reg-name').value;
+  const email = document.getElementById('reg-email').value;
+  const doc = document.getElementById('reg-doc').value;
+  const phone = document.getElementById('reg-phone').value;
+  const profile = document.getElementById('reg-profile').value;
+  const password = document.getElementById('reg-password').value;
+
+  const { error } = await _supabase.auth.signUp({
+    email, password, options: { data: { name, doc, phone, profile } }
+  });
+
+  if (error) return alert('Erro no cadastro: ' + error.message);
+  notify('Conta criada com sucesso!');
+  document.getElementById('register-box').style.display = 'none';
+  document.getElementById('login-box').style.display = 'block';
+}
+
+async function handleLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
+
+  const { error } = await _supabase.auth.signInWithPassword({ email, password });
+  if (error) alert('Falha no login: ' + error.message);
+}
+
+async function handleGoogleLogin() {
+  const { error } = await _supabase.auth.signInWithOAuth({
+    provider: 'google', options: { redirectTo: window.location.origin }
+  });
+  if (error) alert('Erro ao autenticar com o Google: ' + error.message);
+}
+
+async function handleForgotPassword(e) {
+  e.preventDefault();
+  const email = document.getElementById('forgot-email').value;
+
+  const { error } = await _supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin });
+  if (error) return alert('Erro ao enviar e-mail: ' + error.message);
+
+  notify('E-mail enviado!');
+  document.getElementById('forgot-box').style.display = 'none';
+  document.getElementById('login-box').style.display = 'block';
+}
+
+async function handleResetPassword(e) {
+  e.preventDefault();
+  const newPassword = document.getElementById('new-password').value;
+
+  const { error } = await _supabase.auth.updateUser({ password: newPassword });
+  if (error) return alert('Erro ao redefinir senha: ' + error.message);
+
+  notify('Senha atualizada com sucesso!');
+  document.getElementById('reset-password-box').style.display = 'none';
+  document.getElementById('login-box').style.display = 'block';
+}
+
 async function handleUpdateProfile(e) {
   e.preventDefault();
   const name = document.getElementById('edit-name').value;
@@ -233,30 +280,98 @@ async function handleUpdateProfile(e) {
   const phone = document.getElementById('edit-phone').value;
   const profile = document.getElementById('edit-profile').value;
 
-  const { error } = await _supabase.auth.updateUser({
-    data: { name, doc, phone, profile }
-  });
-
-  if (error) return alert('Erro ao atualizar dados: ' + error.message);
+  const { error } = await _supabase.auth.updateUser({ data: { name, doc, phone, profile } });
+  if (error) return alert('Erro ao atualizar: ' + error.message);
 
   currentUser = { ...currentUser, name, doc, phone, profile };
   document.getElementById('user-display-name').innerText = name;
   notify('Perfil atualizado com sucesso!');
 }
 
+// --- GESTÃO DE CATEGORIAS ---
+function atualizarSelectCategorias() {
+  const select = document.getElementById('trans-cat');
+  if (!select) return;
+  select.innerHTML = '';
+
+  categories.forEach(c => {
+    const option = document.createElement('option');
+    option.value = c.name;
+    option.innerText = c.name;
+    select.appendChild(option);
+  });
+}
+
+function handleAddCategory(e) {
+  e.preventDefault();
+  const name = document.getElementById('cat-name-input').value.trim();
+  const limit = parseFloat(document.getElementById('cat-limit-input').value) || 0;
+
+  if (categories.some(c => c.name.toLowerCase() === name.toLowerCase())) {
+    return alert('Esta categoria já existe!');
+  }
+
+  categories.push({ name, limit });
+  atualizarSelectCategorias();
+  renderizarCategorias();
+  renderizarDados();
+  e.target.reset();
+  notify('Categoria criada!');
+}
+
+window.removerCategoria = function(name) {
+  showModal('Remover Categoria', `Deseja apagar a categoria "${name}"?`, () => {
+    categories = categories.filter(c => c.name !== name);
+    atualizarSelectCategorias();
+    renderizarCategorias();
+    renderizarDados();
+    notify('Categoria removida!');
+  });
+};
+
+function renderizarCategorias() {
+  const container = document.getElementById('categories-list-container');
+  if (!container) return;
+  container.innerHTML = '';
+
+  // Calcular total de gastos por categoria no mês atual
+  const gastosPorCat = {};
+  transactions.forEach(t => {
+    if (t.type === 'Despesa') {
+      gastosPorCat[t.cat] = (gastosPorCat[t.cat] || 0) + t.val;
+    }
+  });
+
+  categories.forEach(c => {
+    const gasto = gastosPorCat[c.name] || 0;
+    const perc = c.limit > 0 ? Math.min(100, (gasto / c.limit) * 100) : 0;
+    
+    const card = document.createElement('div');
+    card.className = 'category-card';
+    card.innerHTML = `
+      <div class="category-card-header">
+        <h4>${c.name}</h4>
+        <button class="action-btn btn-del" onclick="removerCategoria('${c.name}')">Excluir</button>
+      </div>
+      <div>
+        <span style="font-size: 13px; color: var(--text-muted);">Gastos: <strong>R$ ${gasto.toFixed(2)}</strong> ${c.limit > 0 ? `/ R$ ${c.limit.toFixed(2)}` : ''}</span>
+      </div>
+      ${c.limit > 0 ? `
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" style="width: ${perc}%; background: ${perc >= 100 ? '#ef4444' : (perc >= 80 ? '#f59e0b' : '#10b981')};"></div>
+        </div>
+      ` : ''}
+    `;
+    container.appendChild(card);
+  });
+}
+
 // --- TRANSAÇÕES ---
 async function carregarTransacoesNuvem() {
   if (!currentUser) return;
 
-  const { data, error } = await _supabase
-    .from('transactions')
-    .select('*')
-    .eq('user_id', currentUser.id);
-
-  if (error) {
-    console.error('Erro ao carregar transações:', error);
-    return;
-  }
+  const { data, error } = await _supabase.from('transactions').select('*').eq('user_id', currentUser.id);
+  if (error) return console.error('Erro ao carregar:', error);
 
   transactions = data.map(item => ({
     id: item.id,
@@ -284,27 +399,13 @@ async function handleSaveTransaction(e) {
   const descFinal = isRecurring ? `${desc} 🔄` : desc;
 
   if (id) {
-    const { error } = await _supabase
-      .from('transactions')
-      .update({ description: descFinal, amount: val, type, category: cat, date })
-      .eq('id', id);
-
+    const { error } = await _supabase.from('transactions').update({ description: descFinal, amount: val, type, category: cat, date }).eq('id', id);
     if (error) return alert('Erro ao atualizar: ' + error.message);
     notify('Lançamento atualizado!');
     document.getElementById('form-title').innerText = "Novo Lançamento Financeiro";
     document.getElementById('trans-id').value = "";
   } else {
-    const { error } = await _supabase
-      .from('transactions')
-      .insert([{
-        user_id: currentUser.id,
-        description: descFinal,
-        amount: val,
-        type,
-        category: cat,
-        date
-      }]);
-
+    const { error } = await _supabase.from('transactions').insert([{ user_id: currentUser.id, description: descFinal, amount: val, type, category: cat, date }]);
     if (error) return alert('Erro ao salvar: ' + error.message);
     notify('Salvo com sucesso!');
   }
@@ -328,10 +429,10 @@ window.editarItem = function(id) {
 };
 
 window.deletarItem = function(id) {
-  showModal('Excluir Lançamento', 'Tem certeza que deseja apagar este lançamento permanentemente?', async () => {
+  showModal('Excluir Lançamento', 'Deseja apagar este lançamento permanentemente?', async () => {
     const { error } = await _supabase.from('transactions').delete().eq('id', id);
     if (error) return alert('Erro ao excluir: ' + error.message);
-    notify('Removido da nuvem!');
+    notify('Removido!');
     carregarTransacoesNuvem();
   });
 };
@@ -349,13 +450,9 @@ function renderizarDados() {
 
   let userItems = [...transactions];
 
-  if (selectedMonth) {
-    userItems = userItems.filter(t => t.date && t.date.startsWith(selectedMonth));
-  }
-
+  if (selectedMonth) userItems = userItems.filter(t => t.date && t.date.startsWith(selectedMonth));
   if (dateStart) userItems = userItems.filter(t => t.date >= dateStart);
   if (dateEnd) userItems = userItems.filter(t => t.date <= dateEnd);
-
   if (filterType !== 'Todos') userItems = userItems.filter(t => t.type === filterType);
   if (search) userItems = userItems.filter(t => t.desc.toLowerCase().includes(search));
 
@@ -390,7 +487,7 @@ function renderizarDados() {
   document.getElementById('val-despesa').innerText = `R$ ${totalDespesa.toFixed(2)}`;
   document.getElementById('val-saldo').innerText = `R$ ${(totalReceita - totalDespesa).toFixed(2)}`;
 
-  // Progresso Orçamento com Alerta
+  // Progresso de Limite Geral
   const limit = parseFloat(document.getElementById('budget-limit')?.value) || 1;
   const perc = Math.min(100, (totalDespesa / limit) * 100);
   const progressBar = document.getElementById('budget-progress');
@@ -399,7 +496,6 @@ function renderizarDados() {
 
   if (progressBar && budgetContainer) {
     progressBar.style.width = `${perc}%`;
-
     if (perc >= 100) {
       progressBar.style.background = '#ef4444';
       budgetContainer.className = 'budget-section danger';
@@ -420,21 +516,15 @@ function renderizarDados() {
   document.getElementById('budget-text').innerText = `${perc.toFixed(1)}% do teto utilizado (R$ ${totalDespesa.toFixed(2)} / R$ ${limit.toFixed(2)})`;
 
   atualizarGraficos(totalReceita, totalDespesa, categoriasDespesas);
+  renderizarCategorias();
 }
 
 // --- CONTAS A PAGAR ---
 async function carregarContasNuvem() {
   if (!currentUser) return;
 
-  const { data, error } = await _supabase
-    .from('bills')
-    .select('*')
-    .eq('user_id', currentUser.id);
-
-  if (error) {
-    console.error('Erro ao carregar contas:', error);
-    return;
-  }
+  const { data, error } = await _supabase.from('bills').select('*').eq('user_id', currentUser.id);
+  if (error) return console.error('Erro ao carregar contas:', error);
 
   bills = data.map(item => ({
     id: item.id,
@@ -454,18 +544,9 @@ async function handleSaveBill(e) {
   const val = parseFloat(document.getElementById('bill-val').value);
   const dueDate = document.getElementById('bill-duedate').value;
 
-  const { error } = await _supabase
-    .from('bills')
-    .insert([{
-      user_id: currentUser.id,
-      description: desc,
-      amount: val,
-      due_date: dueDate,
-      status: 'Pendente'
-    }]);
-
+  const { error } = await _supabase.from('bills').insert([{ user_id: currentUser.id, description: desc, amount: val, due_date: dueDate, status: 'Pendente' }]);
   if (error) return alert('Erro ao agendar conta: ' + error.message);
-  
+
   notify('Conta agendada!');
   e.target.reset();
   carregarContasNuvem();
@@ -508,27 +589,24 @@ function renderizarContas() {
 
 window.marcarComoPaga = async function(id) {
   const { error } = await _supabase.from('bills').update({ status: 'Paga' }).eq('id', id);
-  if (error) return alert('Erro ao atualizar status: ' + error.message);
+  if (error) return alert('Erro ao atualizar: ' + error.message);
   notify('Conta marcada como Paga!');
   carregarContasNuvem();
 };
 
 window.deletarConta = function(id) {
-  showModal('Excluir Conta', 'Deseja remover esta conta agendada?', async () => {
+  showModal('Excluir Conta', 'Deseja remover esta conta?', async () => {
     const { error } = await _supabase.from('bills').delete().eq('id', id);
-    if (error) return alert('Erro ao excluir conta: ' + error.message);
-    notify('Conta removida!');
+    if (error) return alert('Erro ao excluir: ' + error.message);
+    notify('Removida!');
     carregarContasNuvem();
   });
 };
 
 function exportarCSV() {
   if (transactions.length === 0) return alert('Sem dados para exportar!');
-
   let csv = 'Data,Descricao,Categoria,Tipo,Valor\n';
-  transactions.forEach(t => {
-    csv += `${t.date},"${t.desc}",${t.cat},${t.type},${t.val}\n`;
-  });
+  transactions.forEach(t => csv += `${t.date},"${t.desc}",${t.cat},${t.type},${t.val}\n`);
 
   const blob = new Blob([csv], { type: 'text/csv' });
   const url = window.URL.createObjectURL(blob);
@@ -539,6 +617,7 @@ function exportarCSV() {
 }
 
 function atualizarGraficos(receitas, despesas, categorias) {
+  // Gráfico Entradas vs Saídas
   const barCanvas = document.getElementById('barChart');
   if (barCanvas) {
     const ctxBar = barCanvas.getContext('2d');
@@ -553,6 +632,7 @@ function atualizarGraficos(receitas, despesas, categorias) {
     });
   }
 
+  // Gráfico Categorias
   const doughnutCanvas = document.getElementById('doughnutChart');
   if (doughnutCanvas) {
     const ctxDoughnut = doughnutCanvas.getContext('2d');
@@ -563,8 +643,48 @@ function atualizarGraficos(receitas, despesas, categorias) {
         labels: Object.keys(categorias),
         datasets: [{
           data: Object.values(categorias),
-          backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#8b5cf6', '#ec4899', '#64748b']
+          backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#8b5cf6', '#ec4899', '#10b981', '#64748b']
         }]
+      }
+    });
+  }
+
+  // Gráfico Comparativo Mensal (Mês Atual vs Mês Anterior)
+  const compareCanvas = document.getElementById('compareChart');
+  if (compareCanvas) {
+    const now = new Date();
+    const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    
+    const prevMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const prevMonthStr = `${prevMonthDate.getFullYear()}-${String(prevMonthDate.getMonth() + 1).padStart(2, '0')}`;
+
+    let despesasAtual = 0, despesasAnterior = 0;
+    let receitasAtual = 0, receitasAnterior = 0;
+
+    transactions.forEach(t => {
+      if (t.date.startsWith(currentMonthStr)) {
+        if (t.type === 'Despesa') despesasAtual += t.val;
+        if (t.type === 'Receita') receitasAtual += t.val;
+      } else if (t.date.startsWith(prevMonthStr)) {
+        if (t.type === 'Despesa') despesasAnterior += t.val;
+        if (t.type === 'Receita') receitasAnterior += t.val;
+      }
+    });
+
+    const ctxCompare = compareCanvas.getContext('2d');
+    if (compareChartInstance) compareChartInstance.destroy();
+    compareChartInstance = new Chart(ctxCompare, {
+      type: 'bar',
+      data: {
+        labels: ['Mês Anterior', 'Mês Atual'],
+        datasets: [
+          { label: 'Entradas (R$)', data: [receitasAnterior, receitasAtual], backgroundColor: '#10b981', borderRadius: 6 },
+          { label: 'Saídas (R$)', data: [despesasAnterior, despesasAtual], backgroundColor: '#ef4444', borderRadius: 6 }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { position: 'top' } }
       }
     });
   }
