@@ -39,6 +39,7 @@ body {
   color: var(--text-main);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden; /* Evita rolagem lateral indesejada */
 }
 
 /* MODAL OVERLAY */
@@ -115,10 +116,11 @@ body {
 .switch-auth a { color: #4f46e5; text-decoration: none; font-weight: 700; }
 
 /* APP LAYOUT */
-.app-container { display: none; min-height: 100vh; }
+.app-container { display: flex; min-height: 100vh; }
 .sidebar {
   width: 280px; background: var(--sidebar-bg); color: #fff; padding: 36px 24px; display: flex;
   flex-direction: column; justify-content: space-between; border-right: 1px solid var(--border-color);
+  flex-shrink: 0;
 }
 .sidebar-brand {
   font-size: 26px; font-weight: 800;
@@ -138,7 +140,7 @@ body {
 .btn-logout { background: #ef4444; color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 700; width: 100%; box-shadow: 0 6px 16px -2px rgba(239, 68, 68, 0.3); }
 .btn-logout:hover { background: #dc2626; }
 
-.main-content { flex: 1; padding: 40px 48px; overflow-y: auto; }
+.main-content { flex: 1; padding: 40px 48px; overflow-y: auto; width: 100%; }
 .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 36px; flex-wrap: wrap; gap: 16px; }
 .header-bar h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.5px; }
 .subtitle { color: var(--text-muted); font-size: 14px; margin-top: 4px; }
@@ -196,11 +198,12 @@ body {
 .btn-pdf { background: #6366f1; }
 
 /* TABELAS */
-.table-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.table-responsive { width: 100%; overflow-x: auto; } /* Envolva a <table> com essa div no HTML se puder */
+.table-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
 .table-controls { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
 .table-controls input, .table-controls select { padding: 10px 16px; border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-primary); color: var(--text-main); font-size: 13px; outline: none; }
 
-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 600px; }
 th, td { padding: 18px 16px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 14px; }
 th { color: var(--text-muted); font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
 tr:hover td { background: rgba(0,0,0,0.01); }
@@ -216,4 +219,96 @@ tr:hover td { background: rgba(0,0,0,0.01); }
   .main-content { padding: 0; }
   body { background: white; color: black; }
   .panel-card { border: none; box-shadow: none; }
+}
+
+/* ==========================================
+   REGRAS DE RESPONSIVIDADE (MOBILE / TABLET)
+   ========================================== */
+@media (max-width: 900px) {
+  .app-container {
+    flex-direction: column; /* Coloca a barra lateral no topo em telas menores */
+  }
+
+  .sidebar {
+    width: 100%;
+    padding: 20px;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .sidebar-brand {
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  .sidebar-nav {
+    display: flex;
+    overflow-x: auto; /* Permite rolar os botões do menu horizontalmente */
+    gap: 8px;
+    padding-bottom: 8px;
+  }
+
+  .sidebar-nav .nav-item {
+    margin-bottom: 0;
+    white-space: nowrap;
+  }
+
+  .sidebar-footer {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .btn-theme, .btn-logout {
+    margin-bottom: 0;
+  }
+
+  .main-content {
+    padding: 24px 16px; /* Reduz as margens internas da tela principal */
+  }
+}
+
+@media (max-width: 600px) {
+  .auth-box {
+    padding: 24px 18px;
+  }
+
+  .header-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .month-filter-box {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .cards-grid {
+    grid-template-columns: 1fr; /* Força 1 card por linha no celular */
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr; /* Força os campos do formulário ficarem um embaixo do outro */
+  }
+
+  .btn-add {
+    width: 100%;
+  }
+
+  .table-controls {
+    flex-direction: column;
+  }
+
+  .table-controls input, .table-controls select {
+    width: 100%;
+  }
+
+  .export-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .export-actions button {
+    flex: 1;
+  }
 }
