@@ -1,16 +1,400 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FluxoPro - Gestão Financeira Inteligente</title>
-    <link rel="stylesheet" href="style.css?v=2">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FluxoPro Enterprise - Gestão Financeira</title>
+  <link rel="stylesheet" href="style.css">
+  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+  <script src="script.js" defer></script>
 </head>
 <body>
 
-    <div id="app">
-        </div>
+  <div id="toast-container"></div>
 
-    <script src="script.js" type="module"></script>
+  <div id="custom-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-card">
+      <h3 id="modal-title">Confirmação</h3>
+      <p id="modal-message">Tem certeza que deseja realizar esta ação?</p>
+      <div class="modal-actions">
+        <button id="modal-btn-cancel" class="btn-secondary">Cancelar</button>
+        <button id="modal-btn-confirm" class="btn-del-confirm">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="auth-screen" class="auth-wrapper">
+    <div class="auth-box" id="login-box">
+      <div class="brand-logo">⚡ FluxoPro</div>
+      <h2>Acesse sua Conta</h2>
+      <p>Gestão financeira segura e inteligente</p>
+      <form id="form-login">
+        <div class="input-group">
+          <label>E-mail Corporativo ou Pessoal</label>
+          <input type="email" id="login-email" required placeholder="seu@email.com">
+        </div>
+        <div class="input-group">
+          <label>Senha</label>
+          <input type="password" id="login-password" required placeholder="••••••••">
+        </div>
+        <div class="forgot-password-link">
+          <a href="#" id="go-to-forgot">Esqueci minha senha</a>
+        </div>
+        <button type="submit" class="btn-primary">Entrar na Plataforma</button>
+      </form>
+
+      <div class="divider"><span>ou continue com</span></div>
+
+      <button type="button" id="btn-google-login" class="btn-google">
+        <svg width="18" height="18" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+        </svg>
+        Entrar com o Google
+      </button>
+
+      <div class="switch-auth">Primeira vez por aqui? <a href="#" id="go-to-register">Criar conta segura</a></div>
+    </div>
+
+    <div class="auth-box" id="register-box" style="display: none;">
+      <div class="brand-logo">⚡ FluxoPro</div>
+      <h2>Criar Conta Profissional</h2>
+      <p>Configure seu acesso seguro à plataforma</p>
+      <form id="form-register">
+        <div class="input-group">
+          <label>Nome Completo</label>
+          <input type="text" id="reg-name" required placeholder="Ex: João Silva">
+        </div>
+        <div class="input-group">
+          <label>E-mail</label>
+          <input type="email" id="reg-email" required placeholder="seu@email.com">
+        </div>
+        <div class="input-group">
+          <label>CPF ou CNPJ</label>
+          <input type="text" id="reg-doc" required placeholder="000.000.000-00" maxlength="18">
+        </div>
+        <div class="input-group">
+          <label>Telefone / WhatsApp</label>
+          <input type="tel" id="reg-phone" required placeholder="(11) 99999-9999" maxlength="15">
+        </div>
+        <div class="input-group">
+          <label>Perfil de Uso</label>
+          <select id="reg-profile" class="select-styled">
+            <option value="Pessoal">Pessoa Física (Uso Pessoal)</option>
+            <option value="Empresarial">Pessoa Jurídica (Empresa / MEI)</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>Senha de Acesso</label>
+          <input type="password" id="reg-password" required placeholder="••••••••">
+        </div>
+        <button type="submit" class="btn-primary">Finalizar Cadastro Seguro</button>
+      </form>
+      <div class="switch-auth">Já possui conta? <a href="#" id="go-to-login">Fazer Login</a></div>
+    </div>
+
+    <div class="auth-box" id="forgot-box" style="display: none;">
+      <div class="brand-logo">⚡ FluxoPro</div>
+      <h2>Recuperar Senha</h2>
+      <p>Digite seu e-mail cadastrado para receber o link de redefinição.</p>
+      <form id="form-forgot">
+        <div class="input-group">
+          <label>E-mail Cadastrado</label>
+          <input type="email" id="forgot-email" required placeholder="seu@email.com">
+        </div>
+        <button type="submit" class="btn-primary">Enviar Link por E-mail</button>
+      </form>
+      <div class="switch-auth"><a href="#" id="go-to-login-from-forgot">Voltar para o Login</a></div>
+    </div>
+
+    <div class="auth-box" id="reset-password-box" style="display: none;">
+      <div class="brand-logo">⚡ FluxoPro</div>
+      <h2>Criar Nova Senha</h2>
+      <p>Digite sua nova senha de acesso.</p>
+      <form id="form-reset-password">
+        <div class="input-group">
+          <label>Nova Senha</label>
+          <input type="password" id="new-password" required placeholder="••••••••">
+        </div>
+        <button type="submit" class="btn-primary">Atualizar Senha</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="app-screen" class="app-container">
+    <aside class="sidebar">
+      <div>
+        <div class="sidebar-brand">⚡ FluxoPro</div>
+        <nav class="sidebar-nav">
+          <a href="#" class="nav-item active" id="nav-dash">📊 Dashboard</a>
+          <a href="#" class="nav-item" id="nav-bills">🔔 Contas a Pagar</a>
+          <a href="#" class="nav-item" id="nav-categories">🏷️ Categorias & Metas</a>
+          <a href="#" class="nav-item" id="nav-profile">👤 Meu Perfil</a>
+          <a href="#" class="nav-item" id="nav-support">🎧 Suporte VIP</a>
+        </nav>
+      </div>
+      <div>
+        <button class="btn-theme" id="btn-theme">🌓 Alternar Tema</button>
+        <button class="btn-logout" id="btn-logout">Sair da Conta</button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      
+      <div id="section-dashboard" class="page-section">
+        <header class="header-bar">
+          <div>
+            <h1>Painel Financeiro</h1>
+            <p class="subtitle">Bem-vindo(a), <strong id="user-display-name">Usuário</strong></p>
+          </div>
+          <div class="month-filter-box">
+            <label for="month-picker">📅 Mês:</label>
+            <input type="month" id="month-picker" class="month-input">
+            <button id="btn-clear-month" class="btn-secondary">Ver Tudo</button>
+          </div>
+        </header>
+
+        <section class="cards-grid">
+          <div class="card receita">
+            <h3>Total Receitas</h3>
+            <div class="value" id="val-receita">R$ 0,00</div>
+          </div>
+          <div class="card despesa">
+            <h3>Total Despesas</h3>
+            <div class="value" id="val-despesa">R$ 0,00</div>
+          </div>
+          <div class="card saldo">
+            <h3>Balanço Geral</h3>
+            <div class="value" id="val-saldo">R$ 0,00</div>
+          </div>
+        </section>
+
+        <section class="budget-section" id="budget-card-container">
+          <div class="budget-header">
+            <h3>🎯 Meta de Teto Financeiro Mensal</h3>
+            <div>
+              <span>Limite: R$ </span>
+              <input type="number" id="budget-limit" value="5000" class="input-budget">
+            </div>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="budget-progress"></div>
+          </div>
+          <div class="budget-status-row">
+            <span id="budget-alert-badge" class="badge-alert hidden">⚠️ Limite Crítico!</span>
+            <div class="budget-text" id="budget-text">0% do limite utilizado</div>
+          </div>
+        </section>
+
+        <section class="panel-card">
+          <h2 id="form-title">Novo Lançamento Financeiro</h2>
+          <form id="form-transaction">
+            <input type="hidden" id="trans-id">
+            <div class="form-grid">
+              <input type="text" id="trans-desc" placeholder="Descrição da Operação" required>
+              <input type="number" step="0.01" id="trans-val" placeholder="Valor (R$)" required>
+              <select id="trans-type">
+                <option value="Receita">Entrada (+)</option>
+                <option value="Despesa">Saída (-)</option>
+              </select>
+              <select id="trans-cat">
+                </select>
+              <input type="date" id="trans-date" required>
+            </div>
+            <div class="form-options">
+              <label class="checkbox-label">
+                <input type="checkbox" id="trans-recurring"> 🔄 Despesa/Receita Recorrente (Mensal)
+              </label>
+            </div>
+            <button type="submit" class="btn-add">Confirmar Lançamento</button>
+          </form>
+        </section>
+
+        <section class="charts-grid">
+          <div class="panel-card">
+            <h2>Balanço Entradas vs Saídas</h2>
+            <canvas id="barChart"></canvas>
+          </div>
+          <div class="panel-card">
+            <h2>Análise por Categoria</h2>
+            <canvas id="doughnutChart"></canvas>
+          </div>
+        </section>
+
+        <section class="panel-card">
+          <h2>📊 Comparativo: Mês Atual vs Mês Anterior</h2>
+          <canvas id="compareChart"></canvas>
+        </section>
+
+        <section class="panel-card">
+          <div class="table-header">
+            <h2>Histórico de Operações</h2>
+            <div class="export-actions">
+              <button class="btn-export" id="btn-export">📥 Exportar CSV</button>
+              <button class="btn-export btn-pdf" id="btn-print-pdf">📄 Gerar PDF</button>
+            </div>
+          </div>
+          <div class="table-controls">
+            <input type="text" id="search-input" placeholder="🔍 Buscar lançamento...">
+            <select id="filter-type">
+              <option value="Todos">Todos os Tipos</option>
+              <option value="Receita">Somente Entradas</option>
+              <option value="Despesa">Somente Saídas</option>
+            </select>
+            <div class="date-range-filter">
+              <input type="date" id="filter-date-start" title="Data Inicial">
+              <span>até</span>
+              <input type="date" id="filter-date-end" title="Data Final">
+            </div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Descrição</th>
+                <th>Categoria</th>
+                <th>Tipo</th>
+                <th>Valor</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </section>
+      </div>
+
+      <div id="section-bills" class="page-section" style="display: none;">
+        <header class="header-bar">
+          <div>
+            <h1>Contas a Pagar & Vencimentos</h1>
+            <p class="subtitle">Gerencie suas obrigações financeiras futuras</p>
+          </div>
+        </header>
+
+        <section class="panel-card">
+          <h2>Agendar Nova Conta</h2>
+          <form id="form-bill">
+            <div class="form-grid">
+              <input type="text" id="bill-desc" placeholder="Nome da Conta (ex: Aluguel)" required>
+              <input type="number" step="0.01" id="bill-val" placeholder="Valor (R$)" required>
+              <input type="date" id="bill-duedate" required>
+            </div>
+            <button type="submit" class="btn-add">Agendar Conta</button>
+          </form>
+        </section>
+
+        <section class="panel-card">
+          <h2>Suas Contas Agendadas</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Vencimento</th>
+                <th>Descrição</th>
+                <th>Valor</th>
+                <th>Status</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="bills-table-body"></tbody>
+          </table>
+        </section>
+      </div>
+
+      <div id="section-categories" class="page-section" style="display: none;">
+        <header class="header-bar">
+          <div>
+            <h1>Gerenciador de Categorias & Metas</h1>
+            <p class="subtitle">Crie categorias personalizadas e defina limites por área</p>
+          </div>
+        </header>
+
+        <section class="panel-card">
+          <h2>Adicionar Nova Categoria</h2>
+          <form id="form-add-category">
+            <div class="form-grid">
+              <input type="text" id="cat-name-input" placeholder="Nome da Categoria (Ex: Pet, Saúde)" required>
+              <input type="number" step="0.01" id="cat-limit-input" placeholder="Meta de Gastos R$ (Opcional)">
+              <button type="submit" class="btn-add">Criar Categoria</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="panel-card">
+          <h2>Suas Categorias & Teto de Gastos</h2>
+          <div id="categories-list-container" class="cards-grid">
+            </div>
+        </section>
+      </div>
+
+      <div id="section-profile" class="page-section" style="display: none;">
+        <header class="header-bar">
+          <div>
+            <h1>Configurações do Perfil</h1>
+            <p class="subtitle">Gerencie e atualize seus dados cadastrais</p>
+          </div>
+        </header>
+
+        <section class="panel-card max-w-2xl">
+          <h2>Dados da Sua Conta</h2>
+          <form id="form-update-profile">
+            <div class="form-grid-profile">
+              <div class="input-group">
+                <label>Nome Completo</label>
+                <input type="text" id="edit-name" required>
+              </div>
+              <div class="input-group">
+                <label>E-mail (Inalterável)</label>
+                <input type="email" id="edit-email" disabled style="opacity: 0.6; cursor: not-allowed;">
+              </div>
+              <div class="input-group">
+                <label>CPF ou CNPJ</label>
+                <input type="text" id="edit-doc" required maxlength="18">
+              </div>
+              <div class="input-group">
+                <label>Telefone / WhatsApp</label>
+                <input type="tel" id="edit-phone" required maxlength="15">
+              </div>
+              <div class="input-group">
+                <label>Perfil de Uso</label>
+                <select id="edit-profile" class="select-styled">
+                  <option value="Pessoal">Pessoa Física (Uso Pessoal)</option>
+                  <option value="Empresarial">Pessoa Jurídica (Empresa / MEI)</option>
+                </select>
+              </div>
+            </div>
+            <button type="submit" class="btn-primary" style="margin-top: 10px;">Atualizar Meus Dados</button>
+          </form>
+        </section>
+      </div>
+
+      <div id="section-support" class="page-section" style="display: none;">
+        <header class="header-bar">
+          <div>
+            <h1>Central de Atendimento & Suporte</h1>
+            <p class="subtitle">Precisando de ajuda? Nossa equipe está à disposição</p>
+          </div>
+        </header>
+
+        <div class="cards-grid">
+          <div class="card">
+            <h3>💬 Canal do WhatsApp</h3>
+            <p style="color: var(--text-muted); font-size: 14px; margin: 10px 0;">Atendimento rápido em horário comercial.</p>
+            <a href="https://wa.me/5511999999999" target="_blank" class="btn-primary" style="display: inline-block; text-align: center; text-decoration: none;">Chamar no WhatsApp</a>
+          </div>
+          <div class="card">
+            <h3>✉️ E-mail do Suporte</h3>
+            <p style="color: var(--text-muted); font-size: 14px; margin: 10px 0;">Envie sua dúvida ou sugestão diretamente.</p>
+            <a href="mailto:suporte@fluxopro.com" class="btn-primary" style="display: inline-block; text-align: center; text-decoration: none; background: #475569;">Enviar E-mail</a>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
 </body>
 </html>
