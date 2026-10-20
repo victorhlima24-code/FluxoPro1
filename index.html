@@ -5,9 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FluxoPro Enterprise - Gestão Financeira</title>
   <link rel="stylesheet" href="style.css">
-  
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4f46e5">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js" defer></script>
+  
+  <!-- NOVA BIBLIOTECA: SheetJS para exportação em Excel -->
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js" defer></script>
+
+  <!-- Open Finance real: widget oficial do Pluggy Connect (sempre a versão mais recente) -->
+  <script src="https://cdn.pluggy.ai/pluggy-connect/latest/pluggy-connect.js" defer></script>
+  
   <script src="script.js" defer></script>
 </head>
 <body>
@@ -21,6 +37,21 @@
       <div class="modal-actions">
         <button id="modal-btn-cancel" class="btn-secondary">Cancelar</button>
         <button id="modal-btn-confirm" class="btn-del-confirm">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="series-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-card series-modal-card">
+      <h3>Editar Série Recorrente</h3>
+      <p>Isso altera todos os lançamentos recorrentes futuros com a mesma descrição, categoria e tipo — os já ocorridos no passado não são alterados.</p>
+      <div class="form-grid">
+        <input type="text" id="series-new-desc" placeholder="Nova descrição">
+        <input type="number" step="0.01" id="series-new-val" placeholder="Novo valor (R$)">
+      </div>
+      <div class="modal-actions">
+        <button type="button" id="series-btn-cancel" class="btn-secondary">Cancelar</button>
+        <button type="button" id="series-btn-confirm" class="btn-del-confirm" style="background: #f59e0b;">Aplicar à Série</button>
       </div>
     </div>
   </div>
@@ -111,6 +142,19 @@
       <div class="switch-auth"><a href="#" id="go-to-login-from-forgot">Voltar para o Login</a></div>
     </div>
 
+    <div class="auth-box" id="mfa-verify-box" style="display: none;">
+      <div class="brand-logo">⚡ FluxoPro</div>
+      <h2>Verificação em Duas Etapas</h2>
+      <p>Digite o código de 6 dígitos do seu aplicativo autenticador.</p>
+      <form id="form-mfa-verify">
+        <div class="input-group">
+          <label>Código</label>
+          <input type="text" id="mfa-code-input" required placeholder="000000" maxlength="6" inputmode="numeric">
+        </div>
+        <button type="submit" class="btn-primary">Verificar e Entrar</button>
+      </form>
+    </div>
+
     <div class="auth-box" id="reset-password-box" style="display: none;">
       <div class="brand-logo">⚡ FluxoPro</div>
       <h2>Criar Nova Senha</h2>
@@ -132,7 +176,10 @@
         <nav class="sidebar-nav">
           <a href="#" class="nav-item active" id="nav-dash">📊 Dashboard</a>
           <a href="#" class="nav-item" id="nav-bills">🔔 Contas a Pagar</a>
-          <a href="#" class="nav-item" id="nav-categories">🏷️ Categorias & Metas</a>
+          <a href="#" class="nav-item" id="nav-categories">🏷️ Categorias</a>
+          <a href="#" class="nav-item" id="nav-goals">🎯 Planejamento</a>
+          <a href="#" class="nav-item" id="nav-investments">📈 Investimentos</a>
+          <a href="#" class="nav-item" id="nav-accounts">💼 Contas & Carteiras</a>
           <a href="#" class="nav-item" id="nav-profile">👤 Meu Perfil</a>
           <a href="#" class="nav-item" id="nav-support">🎧 Suporte VIP</a>
         </nav>
@@ -151,12 +198,25 @@
             <h1>Painel Financeiro</h1>
             <p class="subtitle">Bem-vindo(a), <strong id="user-display-name">Usuário</strong></p>
           </div>
-          <div class="month-filter-box">
+          <div class="month-filter-box" style="display: flex; align-items: center; gap: 10px;">
+            <!-- Open Finance real via Pluggy. Ver README_NOVAS_FEATURES.md para configurar. -->
+            <button onclick="sincronizarContaBancaria()" class="btn-primary" style="background: #2563eb; margin-right: 15px; font-size: 0.85rem; padding: 6px 12px;" id="btn-open-finance">🏦 Conectar Banco (Open Finance)</button>
+            
             <label for="month-picker">📅 Mês:</label>
             <input type="month" id="month-picker" class="month-input">
+            <label for="dash-account-filter">💼 Conta:</label>
+            <select id="dash-account-filter" class="month-input">
+              <option value="">Todas as contas</option>
+            </select>
             <button id="btn-clear-month" class="btn-secondary">Ver Tudo</button>
           </div>
         </header>
+
+        <!-- NOVO: Painel de Insights de IA -->
+        <div id="painel-insights" style="background: #e0f2fe; padding: 15px; border-radius: 8px; margin-bottom: 20px; color: #1e3a8a; border-left: 4px solid #3b82f6;">
+          <em>A IA está analisando seus dados para gerar insights...</em>
+          <button id="btn-refresh-insights" class="insights-refresh-btn" onclick="atualizarInsightsIA(true)">🔄 Atualizar com IA</button>
+        </div>
 
         <section class="cards-grid">
           <div class="card receita">
@@ -192,24 +252,63 @@
 
         <section class="panel-card">
           <h2 id="form-title">Novo Lançamento Financeiro</h2>
+          
+          <!-- NOVO: Leitura de Nota Fiscal por OCR (IA) -->
+          <div style="margin-bottom: 15px; padding: 10px; background: #f8fafc; border-radius: 6px; border: 1px dashed #cbd5e1;">
+            <p id="status-ocr" style="color: #3b82f6; font-weight: bold; margin-bottom: 5px; font-size: 14px;"></p>
+            <label for="leitor-nota" style="display:block; margin-bottom:5px; font-size: 14px; font-weight:600;">📷 Ler Nota Fiscal (IA):</label>
+            <input type="file" id="leitor-nota" accept="image/*" onchange="lerNotaFiscalViaIA(this.files[0])" style="font-size: 12px;">
+            <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Funciona com fotos (JPG/PNG). Requer a Edge Function <code>ai-assistant</code> publicada — veja README_NOVAS_FEATURES.md.</p>
+          </div>
+
           <form id="form-transaction">
             <input type="hidden" id="trans-id">
             <div class="form-grid">
               <input type="text" id="trans-desc" placeholder="Descrição da Operação" required>
               <input type="number" step="0.01" id="trans-val" placeholder="Valor (R$)" required>
+              
+              <!-- NOVO: Seletor de Moeda -->
+              <select id="moeda" required>
+                <option value="BRL">Real (BRL)</option>
+                <option value="USD">Dólar (USD)</option>
+                <option value="EUR">Euro (EUR)</option>
+              </select>
+
               <select id="trans-type">
                 <option value="Receita">Entrada (+)</option>
                 <option value="Despesa">Saída (-)</option>
               </select>
               <select id="trans-cat">
                 </select>
+              <select id="trans-account">
+                </select>
               <input type="date" id="trans-date" required>
+              <input type="text" id="trans-tags" placeholder="Tags (ex: trabalho, urgente)">
+
+              <!-- NOVO: Upload de Comprovante -->
+              <div class="input-group" style="grid-column: span 2;">
+                <label for="comprovante" style="font-size: 0.85rem; color: var(--text-muted);">📎 Anexar Comprovante (Opcional):</label>
+                <input type="file" id="comprovante" accept="image/*, .pdf">
+              </div>
             </div>
+            
             <div class="form-options">
               <label class="checkbox-label">
                 <input type="checkbox" id="trans-recurring"> 🔄 Despesa/Receita Recorrente (Mensal)
               </label>
             </div>
+
+            <!-- Cofrinho automático: arredonda a despesa e guarda a diferença numa meta -->
+            <div class="roundup-box">
+              <label class="checkbox-label" style="margin: 0;">
+                <input type="checkbox" id="trans-roundup"> 🐷 Arredondar e guardar a diferença no cofrinho
+              </label>
+              <select id="roundup-goal-select" disabled>
+                <option value="">Escolha a meta...</option>
+              </select>
+              <span id="roundup-preview" style="color: var(--text-muted);"></span>
+            </div>
+
             <button type="submit" class="btn-add">Confirmar Lançamento</button>
           </form>
         </section>
@@ -224,10 +323,33 @@
             <canvas id="doughnutChart"></canvas>
           </div>
         </section>
+        
+        <!-- NOVO: Gráfico Semanal -->
+        <section class="panel-card">
+          <h2>📊 Gastos por Dia da Semana</h2>
+          <canvas id="graficoSemanal"></canvas>
+        </section>
 
         <section class="panel-card">
           <h2>📊 Comparativo: Mês Atual vs Mês Anterior</h2>
           <canvas id="compareChart"></canvas>
+        </section>
+
+        <section class="panel-card">
+          <h2>📆 Visão Anual (últimos 12 meses)</h2>
+          <canvas id="annualChart"></canvas>
+        </section>
+
+        <section class="panel-card">
+          <h2>📥 Importar Extrato Bancário</h2>
+          <p class="subtitle" style="margin-bottom: 14px;">Envie um arquivo CSV (data, descrição, valor) ou OFX exportado do seu banco.</p>
+          <div class="form-grid" style="align-items:center;">
+            <input type="file" id="import-file-input" accept=".csv,.ofx">
+            <select id="import-default-account"></select>
+            <select id="import-default-cat"></select>
+            <button type="button" class="btn-add" id="btn-import-file">Importar Arquivo</button>
+          </div>
+          <div id="import-preview-container"></div>
         </section>
 
         <section class="panel-card">
@@ -236,10 +358,12 @@
             <div class="export-actions">
               <button class="btn-export" id="btn-export">📥 Exportar CSV</button>
               <button class="btn-export btn-pdf" id="btn-print-pdf">📄 Gerar PDF</button>
+              <!-- NOVO: Botão de Exportação para Excel -->
+              <button class="btn-export" id="btn-export-excel" onclick="exportarExcel()" style="background: #10b981; color: white; border: none;">📊 Exportar Excel</button>
             </div>
           </div>
           <div class="table-controls">
-            <input type="text" id="search-input" placeholder="🔍 Buscar lançamento...">
+            <input type="text" id="search-input" placeholder="🔍 Buscar por descrição ou tag...">
             <select id="filter-type">
               <option value="Todos">Todos os Tipos</option>
               <option value="Receita">Somente Entradas</option>
@@ -282,6 +406,13 @@
               <input type="text" id="bill-desc" placeholder="Nome da Conta (ex: Aluguel)" required>
               <input type="number" step="0.01" id="bill-val" placeholder="Valor (R$)" required>
               <input type="date" id="bill-duedate" required>
+              <select id="bill-account">
+                </select>
+            </div>
+            <div class="form-options">
+              <label class="checkbox-label">
+                <input type="checkbox" id="bill-recurring"> 🔄 Conta recorrente (repete todo mês)
+              </label>
             </div>
             <button type="submit" class="btn-add">Agendar Conta</button>
           </form>
@@ -324,9 +455,150 @@
         </section>
 
         <section class="panel-card">
-          <h2>Suas Categorias & Teto de Gastos</h2>
+          <!-- NOVO: A lógica JavaScript substituirá isso pelo sistema de "Envelopes" -->
+          <h2>Suas Categorias & Teto de Gastos (Envelopes)</h2>
           <div id="categories-list-container" class="cards-grid">
             </div>
+        </section>
+      </div>
+
+      <div id="section-goals" class="page-section" style="display: none;">
+        <header class="header-bar">
+          <div>
+            <h1>🎯 Planejamento de Metas</h1>
+            <p class="subtitle">Defina objetivos, veja quanto guardar por mês/semana e se isso cabe no seu orçamento</p>
+          </div>
+        </header>
+
+        <section class="panel-card">
+          <h2>1. Criar Planejamento</h2>
+          <form id="form-goal">
+            <div class="form-grid">
+              <input type="text" id="goal-name" placeholder="Nome da Meta (ex: Comprar um carro)" required>
+              <input type="number" step="0.01" id="goal-target" placeholder="Valor Desejado (R$)" required>
+              <input type="number" step="0.01" id="goal-saved-initial" placeholder="Valor Já Guardado (R$, opcional)">
+              <input type="date" id="goal-start-date" title="Data de Início (opcional, padrão: hoje)">
+              <input type="date" id="goal-deadline" placeholder="Data Limite (opcional)">
+            </div>
+            <div id="goal-planning-preview" class="goal-planning-box" style="display: none;"></div>
+            <button type="submit" class="btn-add">Criar Planejamento</button>
+          </form>
+        </section>
+
+        <section class="panel-card">
+          <h2>3. Análise Financeira Geral</h2>
+          <p class="subtitle" style="margin-bottom: 14px;">Calculada a partir das suas receitas e despesas já cadastradas no app.</p>
+          <div id="planning-summary-box" class="goal-planning-box">Cadastre suas transações para ver a análise.</div>
+        </section>
+
+        <section class="panel-card">
+          <h2>2. Cálculo Automático & 4. Progresso</h2>
+          <div id="goals-list-container" class="cards-grid">
+            </div>
+        </section>
+      </div>
+
+      <div id="section-investments" class="page-section" style="display: none;">
+        <header class="header-bar">
+          <div>
+            <h1>📈 Investimentos</h1>
+            <p class="subtitle">Acompanhe ações, fundos imobiliários, renda fixa e outros ativos</p>
+          </div>
+        </header>
+
+        <section class="cards-grid">
+          <div class="card">
+            <h3>Total Investido</h3>
+            <div class="value" id="val-investido">R$ 0,00</div>
+          </div>
+          <div class="card">
+            <h3>Valor Atual</h3>
+            <div class="value" id="val-atual-investimentos">R$ 0,00</div>
+          </div>
+          <div class="card">
+            <h3>Rentabilidade</h3>
+            <div class="value" id="val-rentabilidade">0%</div>
+          </div>
+        </section>
+
+        <section class="panel-card">
+          <h2>Novo Ativo</h2>
+          <form id="form-investment">
+            <div class="form-grid">
+              <input type="text" id="inv-name" placeholder="Nome do Ativo (ex: PETR4, Tesouro Selic)" required>
+              <select id="inv-type">
+                <option value="Ação">Ação</option>
+                <option value="FII">Fundo Imobiliário</option>
+                <option value="Renda Fixa">Renda Fixa</option>
+                <option value="Tesouro">Tesouro Direto</option>
+                <option value="Cripto">Criptomoeda</option>
+                <option value="Outro">Outro</option>
+              </select>
+              <input type="number" step="0.00000001" id="inv-qty" placeholder="Quantidade" required>
+              <input type="number" step="0.01" id="inv-avg-price" placeholder="Preço Médio de Compra (R$)" required>
+              <input type="number" step="0.01" id="inv-current-price" placeholder="Preço Atual (R$)" required>
+            </div>
+            <button type="submit" class="btn-add">Adicionar Ativo</button>
+          </form>
+        </section>
+
+        <section class="panel-card">
+          <h2>Sua Carteira</h2>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Ativo</th>
+                  <th>Tipo</th>
+                  <th>Qtd.</th>
+                  <th>Preço Médio</th>
+                  <th>Preço Atual</th>
+                  <th>Valor Atual</th>
+                  <th>Rentabilidade</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="investments-table-body"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <div id="section-accounts" class="page-section" style="display: none;">
+        <header class="header-bar">
+          <div>
+            <h1>💼 Contas & Carteiras</h1>
+            <p class="subtitle">Separe seu dinheiro por conta corrente, cartão, carteira etc.</p>
+          </div>
+        </header>
+
+        <section class="panel-card">
+          <h2>Nova Conta</h2>
+          <form id="form-account">
+            <div class="form-grid">
+              <input type="text" id="account-name" placeholder="Nome da Conta (ex: Nubank, Carteira)" required>
+              <input type="number" step="0.01" id="account-initial" placeholder="Saldo Inicial (R$)" value="0">
+            </div>
+            <button type="submit" class="btn-add">Criar Conta</button>
+          </form>
+        </section>
+
+        <section class="panel-card">
+          <h2>Suas Contas</h2>
+          <div id="accounts-list-container" class="cards-grid">
+            </div>
+        </section>
+
+        <section class="panel-card">
+          <h2>👨‍👩‍👧 Conta Compartilhada</h2>
+          <p class="subtitle" style="margin-bottom: 14px;">Convide seu cônjuge ou familiar para acompanhar suas finanças (a pessoa precisa já ter uma conta no FluxoPro).</p>
+          <form id="form-share-invite">
+            <div class="form-grid">
+              <input type="email" id="share-email" placeholder="E-mail da pessoa" required>
+              <button type="submit" class="btn-add">Convidar</button>
+            </div>
+          </form>
+          <div id="shares-list-container" style="margin-top: 16px;"></div>
         </section>
       </div>
 
@@ -368,6 +640,12 @@
             </div>
             <button type="submit" class="btn-primary" style="margin-top: 10px;">Atualizar Meus Dados</button>
           </form>
+        </section>
+
+        <section class="panel-card max-w-2xl">
+          <h2>🔐 Autenticação em Duas Etapas (2FA)</h2>
+          <p class="subtitle" id="mfa-status-text" style="margin-bottom: 16px;">Verificando status...</p>
+          <div id="mfa-setup-container"></div>
         </section>
       </div>
 
