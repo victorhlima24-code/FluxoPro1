@@ -37,10 +37,10 @@ body {
   color: var(--text-main);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden; /* Evita rolagem lateral indesejada */
+  overflow-x: hidden;
 }
 
-/* MODAL OVERLAY */
+/* SOBREPOSIÇÃO DE MODAL */
 .modal-overlay {
   position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
   background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px);
@@ -56,7 +56,7 @@ body {
 .modal-actions { display: flex; gap: 12px; justify-content: center; }
 .btn-del-confirm { background: #ef4444; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; }
 
-/* TOAST NOTIFICATION */
+/* NOTIFICAÇÃO TOAST */
 #toast-container { position: fixed; top: 24px; right: 24px; z-index: 9999; }
 .toast {
   background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 14px 24px; border-radius: 14px;
@@ -64,7 +64,7 @@ body {
   font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 8px;
 }
 
-/* AUTH WRAPPER */
+/* ESTRUTURA DE AUTENTICAÇÃO */
 .auth-wrapper {
   display: flex; justify-content: center; align-items: center; min-height: 100vh;
   background: radial-gradient(circle at top left, #1e1b4b, #0f172a, #030712);
@@ -113,7 +113,7 @@ body {
 .switch-auth { margin-top: 24px; text-align: center; font-size: 14px; color: #64748b; }
 .switch-auth a { color: #4f46e5; text-decoration: none; font-weight: 700; }
 
-/* APP LAYOUT */
+/* DISPOSIÇÃO DA APLICAÇÃO (APP LAYOUT) */
 .app-container { display: flex; min-height: 100vh; }
 .sidebar {
   width: 280px; background: var(--sidebar-bg); color: #fff; padding: 36px 24px; display: flex;
@@ -149,7 +149,7 @@ body {
 .btn-secondary { background: var(--bg-primary); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 16px; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 12px; }
 .btn-secondary:hover { background: var(--border-color); }
 
-/* CARDS RESUMO */
+/* CARTÕES DE RESUMO */
 .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-bottom: 36px; }
 .card { background: var(--bg-card); padding: 28px; border-radius: 24px; border: 1px solid var(--border-color); box-shadow: var(--card-shadow); }
 .card:hover { transform: translateY(-3px); }
@@ -169,12 +169,12 @@ body {
 .budget-text { font-size: 13px; color: var(--text-muted); font-weight: 600; }
 .badge-alert { background: #ffe4e6; color: #e11d48; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 800; }
 
-/* CATEGORIAS METAS CARDS */
+/* CARTÕES DE CATEGORIAS E METAS */
 .category-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 14px; box-shadow: var(--card-shadow); }
 .category-card-header { display: flex; justify-content: space-between; align-items: center; }
 .category-card-header h4 { font-size: 16px; font-weight: 800; }
 
-/* PANEL CARDS */
+/* CARTÕES DE PAINEL */
 .panel-card { background: var(--bg-card); padding: 32px; border-radius: 24px; border: 1px solid var(--border-color); margin-bottom: 28px; box-shadow: var(--card-shadow); }
 .panel-card h2 { font-size: 20px; font-weight: 800; margin-bottom: 24px; letter-spacing: -0.3px; }
 
@@ -191,13 +191,9 @@ body {
 .btn-add { background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 14px 32px; border-radius: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 6px 16px -2px rgba(16, 185, 129, 0.3); }
 .btn-add:hover { transform: translateY(-1px); }
 
-/* Grid do dashboard: os dois gráficos lado a lado (Entradas x Saídas / Categoria) */
 .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 28px; }
-
-/* Grid do formulário "Dados da Sua Conta" (perfil) */
 .form-grid-profile { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 8px; }
 
-/* Par de campos de data "de / até" nos filtros da tabela */
 .date-range-filter { display: flex; align-items: center; gap: 8px; }
 .date-range-filter input { padding: 10px 16px; border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-primary); color: var(--text-main); font-size: 13px; outline: none; }
 .date-range-filter span { color: var(--text-muted); font-size: 12px; font-weight: 600; }
@@ -207,7 +203,7 @@ body {
 .btn-pdf { background: #6366f1; }
 
 /* TABELAS */
-.table-responsive { width: 100%; overflow-x: auto; } /* Envolva a <table> com essa div no HTML se puder */
+.table-responsive { width: 100%; overflow-x: auto; }
 .table-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
 .table-controls { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
 .table-controls input, .table-controls select { padding: 10px 16px; border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-primary); color: var(--text-main); font-size: 13px; outline: none; }
@@ -230,127 +226,53 @@ tr:hover td { background: rgba(0,0,0,0.01); }
   .panel-card { border: none; box-shadow: none; }
 }
 
-/* ==========================================
-   REGRAS DE RESPONSIVIDADE (MOBILE / TABLET)
-   ========================================== */
+/* RESPONSIVIDADE (MÓVEL / TABLET) */
 @media (max-width: 900px) {
-  .app-container {
-    flex-direction: column; /* Coloca a barra lateral no topo em telas menores */
-  }
-
-  .sidebar {
-    width: 100%;
-    padding: 20px;
-    border-right: none;
-    border-bottom: 1px solid var(--border-color);
-  }
-
-  .sidebar-brand {
-    margin-bottom: 16px;
-    text-align: center;
-  }
-
-  .sidebar-nav {
-    display: flex;
-    overflow-x: auto; /* Permite rolar os botões do menu horizontalmente */
-    gap: 8px;
-    padding-bottom: 8px;
-  }
-
-  .sidebar-nav .nav-item {
-    margin-bottom: 0;
-    white-space: nowrap;
-  }
-
-  .sidebar-footer {
-    display: flex;
-    gap: 10px;
-    margin-top: 12px;
-  }
-
-  .btn-theme, .btn-logout {
-    margin-bottom: 0;
-  }
-
-  .main-content {
-    padding: 24px 16px; /* Reduz as margens internas da tela principal */
-  }
+  .app-container { flex-direction: column; }
+  .sidebar { width: 100%; padding: 20px; border-right: none; border-bottom: 1px solid var(--border-color); }
+  .sidebar-brand { margin-bottom: 16px; text-align: center; }
+  .sidebar-nav { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 8px; }
+  .sidebar-nav .nav-item { margin-bottom: 0; white-space: nowrap; }
+  .sidebar-footer { display: flex; gap: 10px; margin-top: 12px; }
+  .btn-theme, .btn-logout { margin-bottom: 0; }
+  .main-content { padding: 24px 16px; }
 }
 
 @media (max-width: 600px) {
-  .auth-box {
-    padding: 24px 18px;
-  }
-
-  .header-bar {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .month-filter-box {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .cards-grid {
-    grid-template-columns: 1fr; /* Força 1 card por linha no celular */
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr; /* Força os campos do formulário ficarem um embaixo do outro */
-  }
-
-  .btn-add {
-    width: 100%;
-  }
-
-  .table-controls {
-    flex-direction: column;
-  }
-
-  .table-controls input, .table-controls select {
-    width: 100%;
-  }
-
-  .export-actions {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .export-actions button {
-    flex: 1;
-  }
+  .auth-box { padding: 24px 18px; }
+  .header-bar { flex-direction: column; align-items: flex-start; }
+  .month-filter-box { width: 100%; justify-content: space-between; }
+  .cards-grid { grid-template-columns: 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
+  .btn-add { width: 100%; }
+  .table-controls { flex-direction: column; }
+  .table-controls input, .table-controls select { width: 100%; }
+  .export-actions { width: 100%; justify-content: space-between; }
+  .export-actions button { flex: 1; }
 }
 
-/* ========== NOVOS COMPONENTES ========== */
-
-/* TAGS */
+/* NOVOS COMPONENTES */
 .tag-chip {
   display: inline-block; background: rgba(99, 102, 241, 0.12); color: var(--accent);
   padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-right: 4px;
 }
 
-/* IMPORTAÇÃO */
 #import-preview-container { margin-top: 16px; }
 .import-summary { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; font-weight: 600; }
 
-/* BADGES DE CONTAS A PAGAR */
 .badge { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 800; }
 .badge-pending { background: #fef3c7; color: #b45309; }
 .badge-paid { background: #d1fae5; color: #059669; }
 .badge-late { background: #ffe4e6; color: #e11d48; }
 
-/* INVESTIMENTOS */
 .gain-positive { color: #10b981; font-weight: 700; }
 .gain-negative { color: #ef4444; font-weight: 700; }
 
-/* COMPARTILHAMENTO */
 .share-row {
   display: flex; justify-content: space-between; align-items: center; padding: 12px 16px;
   background: var(--bg-primary); border-radius: 12px; margin-bottom: 8px; font-size: 13px; font-weight: 600;
 }
 
-/* MFA */
 .mfa-qr-box { display: flex; flex-direction: column; align-items: center; gap: 14px; margin-top: 16px; }
 .mfa-qr-box img { border-radius: 12px; border: 1px solid var(--border-color); background: #fff; padding: 8px; }
 .mfa-code-box { max-width: 260px; margin: 0 auto; }
@@ -359,7 +281,6 @@ tr:hover td { background: rgba(0,0,0,0.01); }
 .hidden { display: none !important; }
 .max-w-2xl { max-width: 720px; }
 
-/* ===== NOVOS ESTILOS: features adicionadas ===== */
 .toast { flex-direction: column; align-items: flex-start; gap: 6px; }
 .toast-row { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 16px; }
 .toast-undo-btn { background: rgba(255,255,255,0.25); border: none; color: white; padding: 6px 14px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 13px; white-space: nowrap; }
@@ -388,14 +309,13 @@ tr:hover td { background: rgba(0,0,0,0.01); }
 
 .ocr-drop { border: 1px dashed var(--border-color); }
 
-/* Calculadora de planejamento de metas (quanto guardar por mês) */
 .goal-planning-box { margin: 4px 0 18px; padding: 12px 16px; border-radius: 10px; background: var(--bg-primary); border: 1px solid var(--border-color); font-size: 13px; line-height: 1.6; }
 .goal-planning-box strong { font-weight: 800; }
 .goal-planning-box .feasibility-ok { color: #10b981; font-weight: 700; }
 .goal-planning-box .feasibility-warn { color: #f59e0b; font-weight: 700; }
 .goal-planning-box .feasibility-bad { color: #ef4444; font-weight: 700; }
 
-/* Grid de estatísticas do planejamento (guardar/mês, /semana, falta, %) */
 .goal-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; margin: 10px 0; }
 .goal-stat-item { background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 10px; padding: 8px 10px; text-align: center; }
-.goal-stat-item .stat-label { font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px
+.goal-stat-item .stat-label { font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; }
+                                     
