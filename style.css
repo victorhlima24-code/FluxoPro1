@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-
 :root {
   --bg-primary: #f1f5f9;
   --bg-card: #ffffff;
@@ -193,6 +191,17 @@ body {
 .btn-add { background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 14px 32px; border-radius: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 6px 16px -2px rgba(16, 185, 129, 0.3); }
 .btn-add:hover { transform: translateY(-1px); }
 
+/* Grid do dashboard: os dois gráficos lado a lado (Entradas x Saídas / Categoria) */
+.charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 28px; }
+
+/* Grid do formulário "Dados da Sua Conta" (perfil) */
+.form-grid-profile { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 8px; }
+
+/* Par de campos de data "de / até" nos filtros da tabela */
+.date-range-filter { display: flex; align-items: center; gap: 8px; }
+.date-range-filter input { padding: 10px 16px; border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-primary); color: var(--text-main); font-size: 13px; outline: none; }
+.date-range-filter span { color: var(--text-muted); font-size: 12px; font-weight: 600; }
+
 .export-actions { display: flex; gap: 10px; }
 .btn-export { background: #0284c7; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; }
 .btn-pdf { background: #6366f1; }
@@ -312,3 +321,81 @@ tr:hover td { background: rgba(0,0,0,0.01); }
     flex: 1;
   }
 }
+
+/* ========== NOVOS COMPONENTES ========== */
+
+/* TAGS */
+.tag-chip {
+  display: inline-block; background: rgba(99, 102, 241, 0.12); color: var(--accent);
+  padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-right: 4px;
+}
+
+/* IMPORTAÇÃO */
+#import-preview-container { margin-top: 16px; }
+.import-summary { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; font-weight: 600; }
+
+/* BADGES DE CONTAS A PAGAR */
+.badge { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 800; }
+.badge-pending { background: #fef3c7; color: #b45309; }
+.badge-paid { background: #d1fae5; color: #059669; }
+.badge-late { background: #ffe4e6; color: #e11d48; }
+
+/* INVESTIMENTOS */
+.gain-positive { color: #10b981; font-weight: 700; }
+.gain-negative { color: #ef4444; font-weight: 700; }
+
+/* COMPARTILHAMENTO */
+.share-row {
+  display: flex; justify-content: space-between; align-items: center; padding: 12px 16px;
+  background: var(--bg-primary); border-radius: 12px; margin-bottom: 8px; font-size: 13px; font-weight: 600;
+}
+
+/* MFA */
+.mfa-qr-box { display: flex; flex-direction: column; align-items: center; gap: 14px; margin-top: 16px; }
+.mfa-qr-box img { border-radius: 12px; border: 1px solid var(--border-color); background: #fff; padding: 8px; }
+.mfa-code-box { max-width: 260px; margin: 0 auto; }
+.btn-danger { background: #ef4444; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+
+.hidden { display: none !important; }
+.max-w-2xl { max-width: 720px; }
+
+/* ===== NOVOS ESTILOS: features adicionadas ===== */
+.toast { flex-direction: column; align-items: flex-start; gap: 6px; }
+.toast-row { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 16px; }
+.toast-undo-btn { background: rgba(255,255,255,0.25); border: none; color: white; padding: 6px 14px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 13px; white-space: nowrap; }
+.toast-undo-btn:hover { background: rgba(255,255,255,0.4); }
+
+.receipt-thumb-link { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--accent); text-decoration: none; font-weight: 700; }
+.receipt-thumb-link:hover { text-decoration: underline; }
+
+.envelope-remaining { font-size: 12px; font-weight: 800; margin-top: 2px; }
+.envelope-remaining.ok { color: #10b981; }
+.envelope-remaining.warn { color: #f59e0b; }
+.envelope-remaining.over { color: #ef4444; }
+
+.currency-badge { display: inline-block; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 6px; background: var(--bg-primary); border: 1px solid var(--border-color); margin-left: 6px; color: var(--text-muted); }
+
+.roundup-box { margin-top: 10px; padding: 10px; background: var(--bg-primary); border-radius: 8px; border: 1px dashed var(--border-color); display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 13px; }
+.roundup-box select { padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); }
+
+.series-modal-card .form-grid { margin: 16px 0; }
+.btn-series { background: #f59e0b; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; margin-left: 6px; }
+.btn-series:hover { opacity: 0.85; }
+
+.insights-refresh-btn { background: rgba(59,130,246,0.15); border: 1px solid #3b82f6; color: #1e3a8a; padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; margin-left: 10px; }
+.insights-refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+[data-theme="dark"] .insights-refresh-btn { color: #93c5fd; }
+
+.ocr-drop { border: 1px dashed var(--border-color); }
+
+/* Calculadora de planejamento de metas (quanto guardar por mês) */
+.goal-planning-box { margin: 4px 0 18px; padding: 12px 16px; border-radius: 10px; background: var(--bg-primary); border: 1px solid var(--border-color); font-size: 13px; line-height: 1.6; }
+.goal-planning-box strong { font-weight: 800; }
+.goal-planning-box .feasibility-ok { color: #10b981; font-weight: 700; }
+.goal-planning-box .feasibility-warn { color: #f59e0b; font-weight: 700; }
+.goal-planning-box .feasibility-bad { color: #ef4444; font-weight: 700; }
+
+/* Grid de estatísticas do planejamento (guardar/mês, /semana, falta, %) */
+.goal-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; margin: 10px 0; }
+.goal-stat-item { background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 10px; padding: 8px 10px; text-align: center; }
+.goal-stat-item .stat-label { font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px
