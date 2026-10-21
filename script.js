@@ -11,8 +11,6 @@ const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 });
 
 // --- EDGE FUNCTION (IA real: insights + OCR de nota fiscal) ---
-// Publique a função em supabase/functions/ai-assistant (veja README_NOVAS_FEATURES.md)
-// e configure o segredo ANTHROPIC_API_KEY no projeto Supabase antes de usar.
 const AI_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/ai-assistant`;
 
 // --- ESTADO GLOBAL ---
@@ -34,23 +32,78 @@ let annualChartInstance = null;
 let weeklyChartInstance = null;
 let pendingDeleteAction = null;
 
-// --- NOVOS ESTADOS: desfazer exclusão, câmbio, insights de IA ---
-const EXCLUSION_UNDO_TIME_MS = 6000; // janela para "Desfazer exclusão"
-let pendingExclusions = {}; // { id: timeoutId }
-let exchangeRates = { BRL: 1 }; // cache de câmbio (base BRL)
+const EXCLUSION_UNDO_TIME_MS = 6000;
+let pendingExclusions = {};
+let exchangeRates = { BRL: 1 };
 let exchangeRatesLoaded = false;
-let lastAiInsightTime = 0; // carimbo de data/hora da última chamada real de IA (limite de frequência)
-const AI_INSIGHT_INTERVAL_MS = 5 * 60 * 1000; // no máx. 1 chamada real a cada 5 min
-let seriesInEditing = null; // transação de referência para o editor de série recorrente
+let lastAiInsightTime = 0;
+const AI_INSIGHT_INTERVAL_MS = 5 * 60 * 1000;
+let seriesInEditing = null;
 
-// --- SEGURANÇA: ESCAPE DE HTML ---
+// --- NOVA FUNÇÃO: CALCULADORA AUTOMÁTICA DE ORÇAMENTO (50/30/20) ---
+window.calcularOrcamentoAutomatico = function() {
+  const inputRendimento = document.getElementById('calc-income-input');
+  const boxResultado = document.getElementById('calc-result-box');
+  
+  const rendimento = parseFloat(inputRendimento?.value);
+
+  if (!rendimento || rendimento <= 0) {
+    return alert('Por favor, insira um valor de receita mensal válido.');
+  }
+
+  const essenciais = rendimento * 0.50;
+  const lazer = rendimento * 0.30;
+  const poupanca = rendimento * 0.20;
+
+  document.getElementById('res-essentials').innerText = `R$ ${essenciais.toFixed(2)}`;
+  document.getElementById('res-lifestyle').innerText = `R$ ${lazer.toFixed(2)}`;
+  document.getElementById('res-savings').innerText = `R$ ${poupanca.toFixed(2)}`;
+
+  if (boxResultado) boxResultado.style.display = 'block';
+  notify('Cálculo do orçamento efetuado com sucesso!');
+};
+
+window.aplicarCalculoAosEnvelopes = async function() {
+  const inputRendimento = document.getElementById('calc-income-input');
+  const rendimento = parseFloat(inputRendimento?.value);
+
+  if (!rendimento || rendimento <= 0) {
+    return alert('Por favor, insira um valor de receita válido antes de aplicar aos envelopes.');
+  }
+
+  const essenciaisLimit = rendimento * 0.50;
+  const lazerLimit = rendimento * 0.30;
+  const poupancaLimit = rendimento * 0.20;
+
+  for (let cat of categories) {
+    let novoLimite = null;
+    const nome = cat.name.toLowerCase();
+
+    if (nome.includes('habitação') || nome.includes('moradia') || nome.includes('alimentação') || nome.includes('geral')) {
+      novoLimite = essenciaisLimit / 3;
+    } else if (nome.includes('lazer')) {
+      novoLimite = lazerLimit;
+    } else if (nome.includes('investimentos') || nome.includes('poupança')) {
+      novoLimite = poupancaLimit;
+    }
+
+    if (novoLimite !== null) {
+      cat.limit = novoLimite;
+      await _supabase.from('categories').update({ limit_val: novoLimite }).eq('id', cat.id);
+    }
+  }
+
+  renderCategories();
+  renderData();
+  notify('Limites aplicados aos envelopes de categorias com sucesso!');
+};
+
 function escapeHtml(str) {
   const div = document.createElement('div');
   div.innerText = str ?? '';
   return div.innerHTML;
 }
 
-// --- ETIQUETAS (TAGS) ---
 function normalizeTags(str) {
   return (str || '')
     .split(',')
@@ -59,10 +112,6 @@ function normalizeTags(str) {
     .join(',');
 }
 
-// --- MÚLTIPLAS MOEDAS ---
-// Procura taxas de câmbio (base BRL) numa API pública e gratuita, sem chave (frankfurter.app).
-// Os totais do painel, orçamento e envelopes são sempre apresentados convertidos em BRL,
-// mas cada lançamento mantém e mostra o seu valor e moeda originais.
 async function loadExchangeRates() {
   try {
     const response = await fetch('https://api.frankfurter.app/latest?from=BRL&to=USD,EUR');
@@ -91,7 +140,6 @@ function currencySymbol(currency) {
   return { BRL: 'R$', USD: 'US$', EUR: '€' }[currency] || 'R$';
 }
 
-// --- MÁSCARAS ---
 function maskDoc(value) {
   return value
     .replace(/\D/g, '')
@@ -113,7 +161,6 @@ function applyMasks() {
   phoneInputs.forEach(input => input?.addEventListener('input', (e) => e.target.value = maskPhone(e.target.value)));
 }
 
-// --- NOTIFICAÇÃO & MODAL ---
 function notify(text) {
   const container = document.getElementById('toast-container');
   if (!container) return;
@@ -165,7 +212,6 @@ function hideModal() {
   pendingDeleteAction = null;
 }
 
-// --- EVENTOS E SESSÃO ---
 document.addEventListener('DOMContentLoaded', () => {
   setupEventListeners();
   applyMasks();
@@ -338,16 +384,13 @@ function setupEventListeners() {
   document.getElementById('btn-print-pdf')?.addEventListener('click', exportPDF);
   document.getElementById('btn-import-file')?.addEventListener('click', handleImportFile);
 
-  // Cofrinho automático (arredondamento)
   document.getElementById('trans-roundup')?.addEventListener('change', updatePiggyBankPreview);
   document.getElementById('trans-val')?.addEventListener('input', updatePiggyBankPreview);
   document.getElementById('trans-type')?.addEventListener('change', updatePiggyBankPreview);
 
-  // Editor de série recorrente
   document.getElementById('series-btn-cancel')?.addEventListener('click', closeSeriesEditing);
   document.getElementById('series-btn-confirm')?.addEventListener('click', confirmSeriesEditing);
 
-  // Planejamento de metas (quanto guardar por mês/semana)
   document.getElementById('goal-target')?.addEventListener('input', updateGoalPreview);
   document.getElementById('goal-saved-initial')?.addEventListener('input', updateGoalPreview);
   document.getElementById('goal-deadline')?.addEventListener('change', updateGoalPreview);
@@ -393,7 +436,6 @@ async function startSystem() {
   checkUpcomingBills();
 }
 
-// --- AUTENTICAÇÃO ---
 async function handleRegister(e) {
   e.preventDefault();
   const name = document.getElementById('reg-name').value;
@@ -468,7 +510,6 @@ async function handleUpdateProfile(e) {
   notify('Perfil atualizado com sucesso!');
 }
 
-// --- GESTÃO DE CATEGORIAS ---
 async function loadCategoriesCloud() {
   if(!currentUser) return;
 
@@ -589,7 +630,7 @@ function renderCategories() {
       </div>
       ${c.limit > 0 ? `
         <div class="progress-bar-bg">
-          <div class="progress-bar-fill" style="width: ${perc}\%; background:${perc >= 100 ? '#ef4444' : (perc >= 80 ? '#f59e0b' : '#10b981')};"></div>
+          <div class="progress-bar-fill" style="width: ${perc}%; background:${perc >= 100 ? '#ef4444' : (perc >= 80 ? '#f59e0b' : '#10b981')};"></div>
         </div>
         <div class="envelope-remaining ${statusClass}">${remaining >= 0 ? `Restam R$ ${remaining.toFixed(2)} no envelope` : `Ultrapassou o limite em R$ ${Math.abs(remaining).toFixed(2)}`}</div>
       ` : ''}
@@ -598,7 +639,6 @@ function renderCategories() {
   });
 }
 
-// --- CONTAS & CARTEIRAS ---
 async function loadWallets() {
   if (!currentUser) return;
 
@@ -691,7 +731,7 @@ function renderWallets() {
     container.appendChild(card);
   });
 }
-// --- METAS DE POUPANÇA ---
+
 async function loadGoals() {
   if (!currentUser) return;
 
@@ -1012,7 +1052,6 @@ function renderGoals() {
   renderPlanningSummary();
 }
 
-// --- TRANSAÇÕES RECORRENTES ---
 async function processRecurringTransactions() {
   if (!currentUser) return;
 
@@ -1114,7 +1153,7 @@ async function processRecurringBills() {
     await _supabase.from('bills').insert(newBills);
   }
 }
-// --- EDITOR DE SÉRIE RECORRENTE ---
+
 window.openSeriesEditing = function(id) {
   const t = transactions.find(x => x.id === id);
   if (!t) return;
@@ -1161,7 +1200,6 @@ async function confirmSeriesEditing() {
   await loadTransactionsCloud();
 }
 
-// --- CONTAS A PAGAR ---
 async function loadBillsCloud() {
   if (!currentUser) return;
 
@@ -1278,7 +1316,6 @@ function checkUpcomingBills() {
   }
 }
 
-// --- TRANSAÇÕES ---
 async function loadTransactionsCloud() {
   if (!currentUser) return;
 
@@ -1440,7 +1477,6 @@ window.deleteTransaction = function(id) {
   });
 };
 
-// --- RENDERIZAÇÃO GERAL E PAINEL ---
 function renderData() {
   const search = document.getElementById('search-input')?.value.toLowerCase() || '';
   const filterType = document.getElementById('filter-type')?.value || 'Todos';
@@ -1676,7 +1712,6 @@ function updateCharts(filtered) {
   generateAiInsights(currentExpense, previousExpense, totalRec);
 }
 
-// --- INSIGHTS DE IA ---
 function generateAiInsights(currentExpense, previousExpense, totalRec) {
   const panel = document.getElementById('painel-insights');
   if (!panel || panel.dataset.aiReal === 'true') return;
@@ -1746,7 +1781,6 @@ window.updateAiInsights = async function(force) {
   }
 };
 
-// --- INVESTIMENTOS ---
 async function loadInvestments() {
   if (!currentUser) return;
   const { data, error } = await _supabase.from('investments').select('*').eq('user_id', currentUser.id);
@@ -1831,7 +1865,6 @@ function renderInvestments() {
   }
 }
 
-// --- CONTA COMPARTILHADA ---
 async function handleShareInvite(e) {
   e.preventDefault();
   const email = document.getElementById('share-email').value;
@@ -1855,7 +1888,6 @@ async function loadShares() {
     : '<p style="font-size: 14px; color: var(--text-muted);">Nenhum compartilhamento ativo.</p>';
 }
 
-// --- OPEN FINANCE (Pluggy) ---
 async function sincronizarContaBancaria() {
   const btn = document.getElementById('btn-open-finance');
   if (typeof PluggyConnect === 'undefined') {
@@ -1933,7 +1965,6 @@ async function importViaPluggy(itemId) {
   }
 }
 
-// --- OCR / LEITURA DE NOTA FISCAL ---
 window.lerNotaFiscalViaIA = async function(file) {
   if (!file) return;
   const statusOcr = document.getElementById('status-ocr');
@@ -1977,7 +2008,7 @@ window.lerNotaFiscalViaIA = async function(file) {
     notify('⚠️ Leitura por IA indisponível de momento (a Edge Function precisa de estar publicada — veja README_NOVAS_FEATURES.md).');
   }
 };
-// --- EXPORTAR EXCEL (SHEETJS) ---
+
 function exportarExcel() {
   if (lastFilteredItems.length === 0) {
     return alert('Não existem dados para exportar.');
@@ -1999,7 +2030,6 @@ function exportarExcel() {
   notify('Folha de cálculo Excel gerada com sucesso!');
 }
 
-// --- EXPORTAR CSV E PDF ---
 function exportCSV() {
   if (lastFilteredItems.length === 0) return alert('Nenhum dado para exportar.');
   let csv = 'Data,Descricao,Categoria,Tipo,Valor\n';
@@ -2033,7 +2063,6 @@ function exportPDF() {
   notify('PDF gerado com sucesso!');
 }
 
-// --- IMPORTAR FICHEIRO (CSV/OFX) ---
 async function handleImportFile() {
   const fileInput = document.getElementById('import-file-input');
   const accountId = document.getElementById('import-default-account').value || null;
@@ -2078,7 +2107,6 @@ async function handleImportFile() {
   });
 }
 
-// --- STATUS DO PERFIL E MFA ---
 async function renderMfaStatus() {
   const container = document.getElementById('mfa-setup-container');
   const text = document.getElementById('mfa-status-text');
