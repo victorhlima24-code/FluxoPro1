@@ -198,8 +198,9 @@
             <h1>Painel Financeiro</h1>
             <p class="subtitle">Bem-vindo(a), <strong id="user-display-name">Utilizador</strong></p>
           </div>
-          <div class="month-filter-box" style="display: flex; align-items: center; gap: 10px;">
-            <button onclick="sincronizarContaBancaria()" class="btn-primary" style="background: #2563eb; margin-right: 15px; font-size: 0.85rem; padding: 6px 12px;" id="btn-open-finance">🏦 Ligar Banco (Open Finance)</button>
+          <div class="month-filter-box" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <button onclick="toggleStealthMode()" class="btn-secondary" id="btn-stealth" title="Ocultar/Mostrar Valores" style="font-size: 0.85rem; padding: 6px 12px;">👁️ Modo Privado</button>
+            <button onclick="sincronizarContaBancaria()" class="btn-primary" style="background: #2563eb; font-size: 0.85rem; padding: 6px 12px;" id="btn-open-finance">🏦 Ligar Banco (Open Finance)</button>
             
             <label for="month-picker">📅 Mês:</label>
             <input type="month" id="month-picker" class="month-input">
@@ -248,7 +249,7 @@
           </div>
         </section>
 
-        <!-- NOVO: Simulador de Orçamento 50/30/20 -->
+        <!-- Calculadora Automática de Orçamento (50/30/20) -->
         <section class="panel-card">
           <h2>⚡ Calculadora Automática de Orçamento (50 / 30 / 20)</h2>
           <p class="subtitle" style="margin-bottom: 16px;">Insira a sua receita mensal prevista e calcule automaticamente a distribuição ideal do seu dinheiro[cite: 3].</p>
