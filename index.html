@@ -248,6 +248,36 @@
           </div>
         </section>
 
+        <!-- NOVO: Simulador de Orçamento 50/30/20 -->
+        <section class="panel-card">
+          <h2>⚡ Calculadora Automática de Orçamento (50 / 30 / 20)</h2>
+          <p class="subtitle" style="margin-bottom: 16px;">Insira a sua receita mensal prevista e calcule automaticamente a distribuição ideal do seu dinheiro[cite: 3].</p>
+          <div class="form-grid">
+            <input type="number" id="calc-income-input" placeholder="Rendimento Mensal Total (R$)" step="0.01">
+            <button type="button" class="btn-add" onclick="calcularOrcamentoAutomatico()">Calcular Distribuição</button>
+            <button type="button" class="btn-secondary" onclick="aplicarCalculoAosEnvelopes()" style="height: 100%;">Aplicar aos Envelopes</button>
+          </div>
+          <div id="calc-result-box" class="goal-planning-box" style="display: none; margin-top: 16px;">
+            <div class="cards-grid" style="margin-bottom: 0;">
+              <div class="card">
+                <h3>Essenciais (50%)</h3>
+                <div class="value" id="res-essentials" style="font-size: 22px; color: #3b82f6;">R$ 0,00</div>
+                <small style="color: var(--text-muted); font-size: 11px;">Habitação, Alimentação, Contas</small>
+              </div>
+              <div class="card">
+                <h3>Lazer / Estilo (30%)</h3>
+                <div class="value" id="res-lifestyle" style="font-size: 22px; color: #f59e0b;">R$ 0,00</div>
+                <small style="color: var(--text-muted); font-size: 11px;">Restaurantes, Compras, Lazer</small>
+              </div>
+              <div class="card">
+                <h3>Poupança / Metas (20%)</h3>
+                <div class="value" id="res-savings" style="font-size: 22px; color: #10b981;">R$ 0,00</div>
+                <small style="color: var(--text-muted); font-size: 11px;">Investimentos, Fundo de Emergência</small>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section class="panel-card">
           <h2 id="form-title">Novo Lançamento Financeiro</h2>
           
