@@ -40,7 +40,21 @@ let lastAiInsightTime = 0;
 const AI_INSIGHT_INTERVAL_MS = 5 * 60 * 1000;
 let seriesInEditing = null;
 
-// --- NOVA FUNÇÃO: CALCULADORA AUTOMÁTICA DE ORÇAMENTO (50/30/20) ---
+// --- FUNÇÃO: MODO PRIVACIDADE (STEALTH MODE) ---
+window.toggleStealthMode = function() {
+  const body = document.body;
+  const btn = document.getElementById('btn-stealth');
+  body.classList.toggle('stealth-mode');
+  
+  const isStealth = body.classList.contains('stealth-mode');
+  if (btn) {
+    btn.innerText = isStealth ? '🙈 A Ver Valores' : '👁️ Modo Privado';
+  }
+  
+  notify(isStealth ? 'Modo Privado ativado (valores ocultos).' : 'Modo Privado desativado.');
+};
+
+// --- CALCULADORA AUTOMÁTICA DE ORÇAMENTO (50/30/20) ---
 window.calcularOrcamentoAutomatico = function() {
   const inputRendimento = document.getElementById('calc-income-input');
   const boxResultado = document.getElementById('calc-result-box');
