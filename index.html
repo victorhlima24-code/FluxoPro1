@@ -51,7 +51,48 @@
     </div>
   </div>
 
-  <div id="auth-screen" class="auth-wrapper">
+  <!-- INTRODUÇÃO / LANDING PAGE (SEÇÃO APRESENTANDO O SITE) -->
+  <div id="landing-screen" class="auth-wrapper" style="flex-direction: column; justify-content: flex-start; padding-top: 40px; overflow-y: auto;">
+    <header style="width: 100%; max-width: 1100px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+      <div class="brand-logo" style="margin-bottom: 0;">⚡ FluxoPro Enterprise</div>
+      <div style="display: flex; gap: 12px;">
+        <button type="button" class="btn-secondary" onclick="document.getElementById('landing-screen').style.display='none'; document.getElementById('auth-screen').style.display='flex'; document.getElementById('login-box').style.display='block'; document.getElementById('register-box').style.display='none';">Entrar</button>
+        <button type="button" class="btn-primary" style="padding: 10px 20px;" onclick="document.getElementById('landing-screen').style.display='none'; document.getElementById('auth-screen').style.display='flex'; document.getElementById('register-box').style.display='block'; document.getElementById('login-box').style.display='none';">Criar Conta</button>
+      </div>
+    </header>
+
+    <div style="text-align: center; max-width: 800px; margin-bottom: 48px;">
+      <span class="tag-chip" style="margin-bottom: 16px; font-size: 13px; padding: 6px 16px;">Open Finance & IA Integrada</span>
+      <h1 style="font-size: 42px; font-weight: 800; line-height: 1.2; margin-bottom: 18px; color: var(--text-main);">
+        O controlo financeiro definitivo para o seu negócio.
+      </h1>
+      <p style="font-size: 16px; color: var(--text-muted); line-height: 1.6; margin-bottom: 28px;">
+        Sincronize as suas contas bancárias automaticamente via Open Finance (Pluggy), leia recibos por IA e acompanhe os seus investimentos em tempo real numa interface moderna.
+      </p>
+      <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+        <button type="button" class="btn-primary" style="width: auto; padding: 14px 32px;" onclick="document.getElementById('landing-screen').style.display='none'; document.getElementById('auth-screen').style.display='flex'; document.getElementById('register-box').style.display='block'; document.getElementById('login-box').style.display='none';">Experimentar Agora</button>
+        <button type="button" class="btn-secondary" style="padding: 14px 32px;" onclick="document.getElementById('landing-screen').style.display='none'; document.getElementById('auth-screen').style.display='flex'; document.getElementById('login-box').style.display='block'; document.getElementById('register-box').style.display='none';">Aceder à Plataforma</button>
+      </div>
+    </div>
+
+    <!-- RECURSOS DA LANDING PAGE -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; width: 100%; max-width: 1100px; margin-bottom: 40px;">
+      <div class="card">
+        <h3 style="color: var(--accent-purple); font-size: 14px;">🏦 Open Finance Automático</h3>
+        <p style="color: var(--text-muted); font-size: 13px; margin-top: 8px;">Ligue o seu banco via Pluggy e receba todas as movimentações sem precisar de preencher nada manualmente.</p>
+      </div>
+      <div class="card">
+        <h3 style="color: var(--accent-purple); font-size: 14px;">📷 Leitura por IA (OCR)</h3>
+        <p style="color: var(--text-muted); font-size: 13px; margin-top: 8px;">Tire foto das suas faturas ou recibos e deixe a nossa inteligência artificial extrair o valor, data e descrição.</p>
+      </div>
+      <div class="card">
+        <h3 style="color: var(--accent-purple); font-size: 14px;">📊 Simulador e Relatórios</h3>
+        <p style="color: var(--text-muted); font-size: 13px; margin-top: 8px;">Projeções de juros compostos, teto de orçamento (50/30/20) e relatórios anuais completos em PDF/Excel.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="auth-screen" class="auth-wrapper" style="display: none;">
     <div class="auth-box" id="login-box">
       <div class="brand-logo">⚡ FluxoPro</div>
       <h2>Aceda à sua Conta</h2>
@@ -164,7 +205,7 @@
     </div>
   </div>
 
-  <div id="app-screen" class="app-container">
+  <div id="app-screen" class="app-container" style="display: none;">
     <aside class="sidebar">
       <div>
         <div class="sidebar-brand">⚡ FluxoPro</div>
@@ -581,7 +622,6 @@
         </section>
       </div>
 
-      <!-- NOVA SECÇÃO: SIMULADOR PATRIMONIAL -->
       <div id="section-simulator" class="page-section" style="display: none;">
         <header class="header-bar">
           <div>
