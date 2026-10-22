@@ -358,9 +358,9 @@ function setupEventListeners() {
   document.getElementById('nav-support')?.addEventListener('click', () => switchTab('section-support', 'nav-support'));
 
   document.getElementById('btn-theme')?.addEventListener('click', () => {
-    const isDark = document.body.getAttribute('data-theme') === 'dark';
-    if (isDark) document.body.removeAttribute('data-theme');
-    else document.body.setAttribute('data-theme', 'dark');
+    const isLight = document.body.getAttribute('data-theme') === 'light';
+    if (isLight) document.body.removeAttribute('data-theme');
+    else document.body.setAttribute('data-theme', 'light');
   });
 
   document.getElementById('form-register')?.addEventListener('submit', handleRegister);
@@ -644,7 +644,7 @@ function renderCategories() {
       </div>
       ${c.limit > 0 ? `
         <div class="progress-bar-bg">
-          <div class="progress-bar-fill" style="width: ${perc}%; background:${perc >= 100 ? '#ef4444' : (perc >= 80 ? '#f59e0b' : '#10b981')};"></div>
+          <div class="progress-bar-fill" style="width: ${perc}%; background:${perc >= 100 ? '#f43f5e' : (perc >= 80 ? '#f59e0b' : '#a855f7')};"></div>
         </div>
         <div class="envelope-remaining ${statusClass}">${remaining >= 0 ? `Restam R$ ${remaining.toFixed(2)} no envelope` : `Ultrapassou o limite em R$ ${Math.abs(remaining).toFixed(2)}`}</div>
       ` : ''}
@@ -737,7 +737,7 @@ function renderWallets() {
         <h4>${escapeHtml(a.name)}</h4>
         <button class="action-btn btn-del" onclick="deleteWallet('${a.id}')">Excluir</button>
       </div>
-      <div style="font-size: 24px; font-weight: 800; color: ${balance >= 0 ? '#10b981' : '#ef4444'};">
+      <div style="font-size: 24px; font-weight: 800; color: ${balance >= 0 ? '#a855f7' : '#f43f5e'};">
         R$ ${balance.toFixed(2)}
       </div>
       <span style="font-size: 12px; color: var(--text-muted);">Saldo inicial: R$ ${a.initial.toFixed(2)}</span>
@@ -1054,7 +1054,7 @@ function renderGoals() {
         ${g.deadline ? ` · até ${g.deadline.split('-').reverse().join('/')}` : ''}
       </div>
       <div class="progress-bar-bg">
-        <div class="progress-bar-fill" style="width: ${perc}%; background: ${achieved ? '#10b981' : '#6366f1'};"></div>
+        <div class="progress-bar-fill" style="width: ${perc}%; background: ${achieved ? '#10b981' : '#a855f7'};"></div>
       </div>
       ${!achieved ? generateGoalStatsGrid(plan) : ''}
       ${!achieved ? `<div class="goal-planning-box">${goalPlanningText(plan)}</div>` : ''}
@@ -1266,7 +1266,7 @@ function renderBills() {
       statusClass = 'badge-paid';
       statusText = 'Paga';
     } else if (b.dueDate < today) {
-      statusClass = 'badge-overdue';
+      statusClass = 'badge-late';
       statusText = 'Vencida';
     }
 
@@ -1540,7 +1540,7 @@ function renderData() {
   if (elDesp) elDesp.innerText = `R$ ${totalDesp.toFixed(2)}`;
   if (elSaldo) {
     elSaldo.innerText = `R$ ${balance.toFixed(2)}`;
-    elSaldo.style.color = balance >= 0 ? '#10b981' : '#ef4444';
+    elSaldo.style.color = balance >= 0 ? '#10b981' : '#f43f5e';
   }
 
   updateBudget(totalDesp);
@@ -1561,7 +1561,7 @@ function updateBudget(totalExpenses) {
   const perc = limit > 0 ? Math.min(100, (totalExpenses / limit) * 100) : 0;
 
   fill.style.width = `${perc}%`;
-  fill.style.background = perc >= 100 ? '#ef4444' : (perc >= 80 ? '#f59e0b' : '#10b981');
+  fill.style.background = perc >= 100 ? '#f43f5e' : (perc >= 80 ? '#f59e0b' : '#a855f7');
 
   if (badge) {
     if (perc >= 90) badge.classList.remove('hidden');
@@ -1593,13 +1593,13 @@ function updateTable(list) {
         ${t.receiptUrl ? `<br><a class="receipt-thumb-link" href="${escapeHtml(t.receiptUrl)}" target="_blank" rel="noopener">📎 Comprovativo</a>` : ''}
       </td>
       <td>${escapeHtml(t.cat)}</td>
-      <td><span class="badge ${t.type === 'Receita' ? 'badge-paid' : 'badge-overdue'}">${t.type}</span></td>
-      <td style="color: ${t.type === 'Receita' ? '#10b981' : '#ef4444'}; font-weight:700;">
+      <td><span class="badge ${t.type === 'Receita' ? 'badge-paid' : 'badge-late'}">${t.type}</span></td>
+      <td style="color: ${t.type === 'Receita' ? '#10b981' : '#f43f5e'}; font-weight:700;">
         ${t.type === 'Receita' ? '+' : '-'} ${currencySymbol(t.currency)} ${t.val.toFixed(2)}
         ${currencyNotBrl ? `<span class="currency-badge">${t.currency} · ≈ R$ ${convertedValue.toFixed(2)}</span>` : ''}
       </td>
       <td>
-        <button class="action-btn" onclick="editTransaction('${t.id}')">Editar</button>
+        <button class="action-btn btn-edit" onclick="editTransaction('${t.id}')">Editar</button>
         ${t.isRecurring ? `<button class="btn-series" onclick="openSeriesEditing('${t.id}')" title="Editar todos os lançamentos futuros desta série">🔄 Série</button>` : ''}
         <button class="action-btn btn-del" onclick="deleteTransaction('${t.id}')">Excluir</button>
       </td>
@@ -1629,7 +1629,7 @@ function updateCharts(filtered) {
       type: 'bar',
       data: {
         labels: ['Entradas', 'Saídas'],
-        datasets: [{ label: 'Valores (R$)', data: [rec, desp], backgroundColor: ['#10b981', '#ef4444'] }]
+        datasets: [{ label: 'Valores (R$)', data: [rec, desp], backgroundColor: ['#10b981', '#f43f5e'], borderRadius: 8 }]
       },
       options: { responsive: true, plugins: { legend: { display: false } } }
     });
@@ -1647,7 +1647,7 @@ function updateCharts(filtered) {
       type: 'doughnut',
       data: {
         labels: Object.keys(catMap),
-        datasets: [{ data: Object.values(catMap), backgroundColor: ['#6366f1', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'] }]
+        datasets: [{ data: Object.values(catMap), backgroundColor: ['#a855f7', '#c084fc', '#8b5cf6', '#34d399', '#fbbf24', '#f43f5e', '#e9d5ff'] }]
       },
       options: { responsive: true }
     });
@@ -1667,7 +1667,7 @@ function updateCharts(filtered) {
       type: 'bar',
       data: {
         labels: weekdays,
-        datasets: [{ label: 'Gastos por Dia da Semana', data: expensesPerDay, backgroundColor: '#3b82f6' }]
+        datasets: [{ label: 'Gastos por Dia da Semana', data: expensesPerDay, backgroundColor: '#a855f7', borderRadius: 8 }]
       },
       options: { responsive: true }
     });
@@ -1691,7 +1691,7 @@ function updateCharts(filtered) {
       type: 'bar',
       data: {
         labels: ['Mês Anterior', 'Mês Atual'],
-        datasets: [{ label: 'Despesas', data: [previousExpense, currentExpense], backgroundColor: ['#94a3b8', '#4f46e5'] }]
+        datasets: [{ label: 'Despesas', data: [previousExpense, currentExpense], backgroundColor: ['#6b21a8', '#a855f7'], borderRadius: 8 }]
       },
       options: { responsive: true }
     });
@@ -1717,7 +1717,7 @@ function updateCharts(filtered) {
       type: 'line',
       data: {
         labels: yearLabels,
-        datasets: [{ label: 'Evolução de Gastos', data: yearData, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', fill: true, tension: 0.3 }]
+        datasets: [{ label: 'Evolução de Gastos', data: yearData, borderColor: '#a855f7', backgroundColor: 'rgba(168, 85, 247, 0.15)', fill: true, tension: 0.35 }]
       },
       options: { responsive: true }
     });
@@ -1788,7 +1788,7 @@ window.updateAiInsights = async function(force) {
     lastAiInsightTime = now;
   } catch (err) {
     console.warn('IA de insights indisponível, a manter análise local:', err.message);
-    if (force) notify('⚠️ IA indisponível de momento (a Edge Function precisa de estar publicada — veja README_NOVAS_FEATURES.md).');
+    if (force) notify('⚠️ IA indisponível de momento (a Edge Function precisa de estar publicada).');
     panel.dataset.aiReal = 'false';
     const btn = document.getElementById('btn-refresh-insights');
     if (btn) { btn.disabled = false; btn.innerText = '🔄 Atualizar com IA'; }
@@ -1863,7 +1863,7 @@ function renderInvestments() {
       <td>R$ ${inv.avgPrice.toFixed(2)}</td>
       <td>R$ ${inv.currentPrice.toFixed(2)}</td>
       <td>R$ ${curTotal.toFixed(2)}</td>
-      <td style="color: ${profitability >= 0 ? '#10b981' : '#ef4444'}; font-weight:700;">${profitability.toFixed(2)}%</td>
+      <td style="color: ${profitability >= 0 ? '#34d399' : '#f43f5e'}; font-weight:700;">${profitability.toFixed(2)}%</td>
       <td><button class="action-btn btn-del" onclick="deleteInvestment('${inv.id}')">Excluir</button></td>
     `;
     tbody.appendChild(tr);
@@ -1875,7 +1875,7 @@ function renderInvestments() {
   const elProf = document.getElementById('val-rentabilidade');
   if (elProf) {
     elProf.innerText = `${totalProf.toFixed(2)}%`;
-    elProf.style.color = totalProf >= 0 ? '#10b981' : '#ef4444';
+    elProf.style.color = totalProf >= 0 ? '#34d399' : '#f43f5e';
   }
 }
 
@@ -1946,7 +1946,7 @@ async function sincronizarContaBancaria() {
     pluggyConnect.init();
   } catch (err) {
     console.error('Erro ao iniciar Open Finance:', err);
-    notify('⚠️ Open Finance indisponível de momento (as Edge Functions do Pluggy precisam de estar publicadas — veja README_NOVAS_FEATURES.md).');
+    notify('⚠️ Open Finance indisponível de momento (as Edge Functions do Pluggy precisam de estar publicadas).');
   } finally {
     if (btn) { btn.disabled = false; btn.innerText = '🏦 Conectar Banco (Open Finance)'; }
   }
@@ -2019,7 +2019,7 @@ window.lerNotaFiscalViaIA = async function(file) {
   } catch (err) {
     console.error('Erro no OCR de nota fiscal:', err);
     if (statusOcr) statusOcr.innerText = '⚠️ Não foi possível ler a nota. Preencha manualmente.';
-    notify('⚠️ Leitura por IA indisponível de momento (a Edge Function precisa de estar publicada — veja README_NOVAS_FEATURES.md).');
+    notify('⚠️ Leitura por IA indisponível de momento (a Edge Function precisa de estar publicada).');
   }
 };
 
