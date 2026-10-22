@@ -169,14 +169,15 @@
       <div>
         <div class="sidebar-brand">⚡ FluxoPro</div>
         <nav class="sidebar-nav">
-          <a href="#" class="nav-item active" id="nav-dash">📊 Painel</a>
-          <a href="#" class="nav-item" id="nav-bills">🔔 Contas a Pagar</a>
-          <a href="#" class="nav-item" id="nav-categories">🏷️ Categorias</a>
-          <a href="#" class="nav-item" id="nav-goals">🎯 Planeamento</a>
-          <a href="#" class="nav-item" id="nav-investments">📈 Investimentos</a>
-          <a href="#" class="nav-item" id="nav-accounts">💼 Contas & Carteiras</a>
-          <a href="#" class="nav-item" id="nav-profile">👤 O Meu Perfil</a>
-          <a href="#" class="nav-item" id="nav-support">🎧 Suporte VIP</a>
+          <a href="#" class="nav-item active" id="nav-dash">Painel</a>
+          <a href="#" class="nav-item" id="nav-bills">Contas a Pagar</a>
+          <a href="#" class="nav-item" id="nav-categories">Categorias</a>
+          <a href="#" class="nav-item" id="nav-goals">Planeamento</a>
+          <a href="#" class="nav-item" id="nav-investments">Investimentos</a>
+          <a href="#" class="nav-item" id="nav-simulator">Simulador Patrimonial</a>
+          <a href="#" class="nav-item" id="nav-accounts">Contas & Carteiras</a>
+          <a href="#" class="nav-item" id="nav-profile">O Meu Perfil</a>
+          <a href="#" class="nav-item" id="nav-support">Suporte VIP</a>
         </nav>
       </div>
       <div>
@@ -391,7 +392,6 @@
             </div>
           </div>
 
-          <!-- CONTENTOR RESPONSIVO DE TABELA (SENSE CORTES) -->
           <div class="table-responsive">
             <table>
               <thead>
@@ -578,6 +578,61 @@
               <tbody id="investments-table-body"></tbody>
             </table>
           </div>
+        </section>
+      </div>
+
+      <!-- NOVA SECÇÃO: SIMULADOR PATRIMONIAL -->
+      <div id="section-simulator" class="page-section" style="display: none;">
+        <header class="header-bar">
+          <div>
+            <h1>Simulador de Juros Compostos</h1>
+            <p class="subtitle">Projete o crescimento de longo prazo do seu património financeiro</p>
+          </div>
+        </header>
+
+        <section class="panel-card">
+          <h2>Parâmetros da Projeção</h2>
+          <form id="form-simulator" onsubmit="event.preventDefault(); calcularJurosCompostos();">
+            <div class="form-grid">
+              <div class="input-group" style="margin-bottom:0;">
+                <label>Capital Inicial (R$)</label>
+                <input type="number" step="0.01" id="sim-initial" value="10000" required>
+              </div>
+              <div class="input-group" style="margin-bottom:0;">
+                <label>Aporte Mensal (R$)</label>
+                <input type="number" step="0.01" id="sim-monthly" value="1000" required>
+              </div>
+              <div class="input-group" style="margin-bottom:0;">
+                <label>Rentabilidade Anual (% a.a.)</label>
+                <input type="number" step="0.1" id="sim-rate" value="10.5" required>
+              </div>
+              <div class="input-group" style="margin-bottom:0;">
+                <label>Período (Anos)</label>
+                <input type="number" id="sim-years" value="10" required>
+              </div>
+            </div>
+            <button type="submit" class="btn-add" style="margin-top: 20px;">Calcular Projeção</button>
+          </form>
+
+          <div class="simulator-results-grid">
+            <div class="simulator-result-card">
+              <span>Valor Total Acumulado</span>
+              <h4 id="sim-res-total" style="color: var(--accent-purple);">R$ 0,00</h4>
+            </div>
+            <div class="simulator-result-card">
+              <span>Total Investido</span>
+              <h4 id="sim-res-invested">R$ 0,00</h4>
+            </div>
+            <div class="simulator-result-card">
+              <span>Rendimento em Juros</span>
+              <h4 id="sim-res-interest" style="color: #10b981;">R$ 0,00</h4>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel-card">
+          <h2>Evolução Patrimonial Anual</h2>
+          <canvas id="simulatorChart"></canvas>
         </section>
       </div>
 
