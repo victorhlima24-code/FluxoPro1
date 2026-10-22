@@ -6,14 +6,8 @@
   <title>FluxoPro Enterprise - Gestão Financeira</title>
   <link rel="stylesheet" href="style.css">
 
-  <!-- Fonte Moderna Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-  <!-- PWA -->
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#4f46e5">
+  <meta name="theme-color" content="#a855f7">
   <link rel="icon" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
 
@@ -22,11 +16,7 @@
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js" defer></script>
-  
-  <!-- SheetJS para exportação em Excel -->
   <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js" defer></script>
-
-  <!-- Open Finance real: widget oficial do Pluggy Connect -->
   <script src="https://cdn.pluggy.ai/pluggy-connect/latest/pluggy-connect.js" defer></script>
   
   <script src="script.js" defer></script>
@@ -203,9 +193,9 @@
             <h1>Painel Financeiro</h1>
             <p class="subtitle">Bem-vindo(a), <strong id="user-display-name">Utilizador</strong></p>
           </div>
-          <div class="month-filter-box" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-            <button onclick="toggleStealthMode()" class="btn-secondary" id="btn-stealth" title="Ocultar/Mostrar Valores" style="font-size: 0.85rem; padding: 6px 12px;">👁️ Modo Privado</button>
-            <button onclick="sincronizarContaBancaria()" class="btn-primary" style="background: #2563eb; font-size: 0.85rem; padding: 6px 12px;" id="btn-open-finance">🏦 Ligar Banco (Open Finance)</button>
+          <div class="month-filter-box">
+            <button onclick="toggleStealthMode()" class="btn-secondary" id="btn-stealth" title="Ocultar/Mostrar Valores">👁️ Modo Privado</button>
+            <button onclick="sincronizarContaBancaria()" class="btn-primary" style="background: #a855f7; font-size: 0.85rem; padding: 6px 12px;" id="btn-open-finance">🏦 Ligar Banco (Open Finance)</button>
             
             <label for="month-picker">📅 Mês:</label>
             <input type="month" id="month-picker" class="month-input">
@@ -217,7 +207,7 @@
           </div>
         </header>
 
-        <div id="painel-insights" style="background: #e0f2fe; padding: 15px; border-radius: 8px; margin-bottom: 20px; color: #1e3a8a; border-left: 4px solid #3b82f6;">
+        <div id="painel-insights" style="background: rgba(168, 85, 247, 0.1); padding: 15px; border-radius: 12px; margin-bottom: 20px; color: var(--text-main); border: 1px solid var(--border-color);">
           <em>A IA está a analisar os seus dados para gerar insights...</em>
           <button id="btn-refresh-insights" class="insights-refresh-btn" onclick="updateAiInsights(true)">🔄 Atualizar com IA</button>
         </div>
@@ -267,7 +257,7 @@
             <div class="cards-grid" style="margin-bottom: 0;">
               <div class="card">
                 <h3>Essenciais (50%)</h3>
-                <div class="value" id="res-essentials" style="font-size: 22px; color: #3b82f6;">R$ 0,00</div>
+                <div class="value" id="res-essentials" style="font-size: 22px; color: #a855f7;">R$ 0,00</div>
                 <small style="color: var(--text-muted); font-size: 11px;">Habitação, Alimentação, Contas</small>
               </div>
               <div class="card">
@@ -287,8 +277,8 @@
         <section class="panel-card">
           <h2 id="form-title">Novo Lançamento Financeiro</h2>
           
-          <div style="margin-bottom: 15px; padding: 10px; background: #f8fafc; border-radius: 6px; border: 1px dashed #cbd5e1;">
-            <p id="status-ocr" style="color: #3b82f6; font-weight: bold; margin-bottom: 5px; font-size: 14px;"></p>
+          <div style="margin-bottom: 15px; padding: 12px; background: rgba(168, 85, 247, 0.05); border-radius: 12px; border: 1px dashed var(--border-color);">
+            <p id="status-ocr" style="color: var(--accent-purple); font-weight: bold; margin-bottom: 5px; font-size: 14px;"></p>
             <label for="leitor-nota" style="display:block; margin-bottom:5px; font-size: 14px; font-weight:600;">📷 Ler Fatura/Recibo (IA):</label>
             <input type="file" id="leitor-nota" accept="image/*" onchange="lerNotaFiscalViaIA(this.files[0])" style="font-size: 12px;">
             <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Funciona com fotografias (JPG/PNG). Requer a Edge Function <code>ai-assistant</code> publicada.</p>
