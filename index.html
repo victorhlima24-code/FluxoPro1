@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>FluxoPro Enterprise - Gestão Financeira</title>
+  <title>FluxoPro Enterprise - Gestão Financeira Inteligente</title>
   <link rel="stylesheet" href="style.css">
 
   <link rel="manifest" href="manifest.json">
@@ -51,47 +51,116 @@
     </div>
   </div>
 
-  <!-- INTRODUÇÃO / LANDING PAGE (SEÇÃO APRESENTANDO O SITE) -->
-  <div id="landing-screen" class="auth-wrapper" style="flex-direction: column; justify-content: flex-start; padding-top: 40px; overflow-y: auto;">
-    <header style="width: 100%; max-width: 1100px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
-      <div class="brand-logo" style="margin-bottom: 0;">⚡ FluxoPro Enterprise</div>
+  <!-- LANDING PAGE PROFISSIONAL (INTRODUÇÃO) -->
+  <div id="landing-screen" class="auth-wrapper" style="flex-direction: column; justify-content: flex-start; padding: 0; overflow-y: auto; background: var(--bg-primary);">
+    
+    <!-- NAVBAR SUPERIOR -->
+    <nav style="width: 100%; max-width: 1200px; display: flex; justify-content: space-between; align-items: center; padding: 24px 20px; margin: 0 auto; position: fixed; top: 0; background: rgba(9, 7, 15, 0.85); backdrop-filter: blur(16px); z-index: 1000; border-bottom: 1px solid var(--border-color);">
+      <div class="brand-logo" style="margin-bottom: 0; font-size: 24px;">⚡ FluxoPro <span style="font-size: 12px; color: var(--accent-purple); font-weight: 500;">ENTERPRISE</span></div>
       <div style="display: flex; gap: 12px;">
-        <button type="button" class="btn-secondary" onclick="document.getElementById('landing-screen').style.display='none'; document.getElementById('auth-screen').style.display='flex'; document.getElementById('login-box').style.display='block'; document.getElementById('register-box').style.display='none';">Entrar</button>
-        <button type="button" class="btn-primary" style="padding: 10px 20px;" onclick="document.getElementById('landing-screen').style.display='none'; document.getElementById('auth-screen').style.display='flex'; document.getElementById('register-box').style.display='block'; document.getElementById('login-box').style.display='none';">Criar Conta</button>
+        <button type="button" class="btn-secondary" style="padding: 10px 22px; font-size: 13px;" onclick="document.getElementById('landing-screen').style.display='none'; document.getElementById('auth-screen').style.display='flex'; document.getElementById('login-box').style.display='block'; document.getElementById('register-box').style.display='none';">Entrar</button>
+        <button type="button" class="btn-primary" style="padding: 10px 22px; font-size: 13px; width: auto;" onclick="document.getElementById('landing-screen').style.display='none'; document.getElementById('auth-screen').style.display='flex'; document.getElementById('register-box').style.display='block'; document.getElementById('login-box').style.display='none';">Criar Conta</button>
       </div>
-    </header>
+    </nav>
 
-    <div style="text-align: center; max-width: 800px; margin-bottom: 48px;">
-      <span class="tag-chip" style="margin-bottom: 16px; font-size: 13px; padding: 6px 16px;">Open Finance & IA Integrada</span>
-      <h1 style="font-size: 42px; font-weight: 800; line-height: 1.2; margin-bottom: 18px; color: var(--text-main);">
-        O controlo financeiro definitivo para o seu negócio.
+    <!-- HERO SECTION -->
+    <div style="text-align: center; max-width: 900px; margin: 160px auto 80px; padding: 0 20px;">
+      <span class="tag-chip" style="margin-bottom: 20px; font-size: 12px; padding: 6px 18px; letter-spacing: 1px;">PLATAFORMA FINANCEIRA DE ALTO PADRÃO</span>
+      <h1 style="font-size: 48px; font-weight: 800; line-height: 1.15; margin-bottom: 24px; color: var(--text-main); letter-spacing: -1px;">
+        O controlo financeiro definitivo para o seu negócio e património.
       </h1>
-      <p style="font-size: 16px; color: var(--text-muted); line-height: 1.6; margin-bottom: 28px;">
-        Sincronize as suas contas bancárias automaticamente via Open Finance (Pluggy), leia recibos por IA e acompanhe os seus investimentos em tempo real numa interface moderna.
+      <p style="font-size: 18px; color: var(--text-muted); line-height: 1.6; margin-bottom: 36px; max-width: 750px; margin-left: auto; margin-right: auto;">
+        Sincronize as suas contas bancárias automaticamente via Open Finance (Pluggy), processe recibos com Inteligência Artificial e antecipe decisões com relatórios de nível corporativo.
       </p>
       <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
-        <button type="button" class="btn-primary" style="width: auto; padding: 14px 32px;" onclick="document.getElementById('landing-screen').style.display='none'; document.getElementById('auth-screen').style.display='flex'; document.getElementById('register-box').style.display='block'; document.getElementById('login-box').style.display='none';">Experimentar Agora</button>
-        <button type="button" class="btn-secondary" style="padding: 14px 32px;" onclick="document.getElementById('landing-screen').style.display='none'; document.getElementById('auth-screen').style.display='flex'; document.getElementById('login-box').style.display='block'; document.getElementById('register-box').style.display='none';">Aceder à Plataforma</button>
+        <button type="button" class="btn-primary" style="width: auto; padding: 16px 36px; font-size: 15px;" onclick="document.getElementById('landing-screen').style.display='none'; document.getElementById('auth-screen').style.display='flex'; document.getElementById('register-box').style.display='block'; document.getElementById('login-box').style.display='none';">Começar Gratuitamente</button>
+        <button type="button" class="btn-secondary" style="padding: 16px 36px; font-size: 15px;" onclick="document.getElementById('landing-screen').style.display='none'; document.getElementById('auth-screen').style.display='flex'; document.getElementById('login-box').style.display='block'; document.getElementById('register-box').style.display='none';">Aceder ao Sistema</button>
       </div>
     </div>
 
-    <!-- RECURSOS DA LANDING PAGE -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; width: 100%; max-width: 1100px; margin-bottom: 40px;">
-      <div class="card">
-        <h3 style="color: var(--accent-purple); font-size: 14px;">🏦 Open Finance Automático</h3>
-        <p style="color: var(--text-muted); font-size: 13px; margin-top: 8px;">Ligue o seu banco via Pluggy e receba todas as movimentações sem precisar de preencher nada manualmente.</p>
+    <!-- SEÇÃO DE RECURSOS PRINCIPAIS -->
+    <div style="width: 100%; max-width: 1200px; padding: 0 20px; margin-bottom: 100px;">
+      <div style="text-align: center; margin-bottom: 50px;">
+        <h2 style="font-size: 30px; font-weight: 800; color: var(--text-main); margin-bottom: 12px;">Tecnologia de Ponta</h2>
+        <p style="color: var(--text-muted); font-size: 15px;">Tudo o que precisa para gerir finanças com precisão absoluta.</p>
       </div>
-      <div class="card">
-        <h3 style="color: var(--accent-purple); font-size: 14px;">📷 Leitura por IA (OCR)</h3>
-        <p style="color: var(--text-muted); font-size: 13px; margin-top: 8px;">Tire foto das suas faturas ou recibos e deixe a nossa inteligência artificial extrair o valor, data e descrição.</p>
-      </div>
-      <div class="card">
-        <h3 style="color: var(--accent-purple); font-size: 14px;">📊 Simulador e Relatórios</h3>
-        <p style="color: var(--text-muted); font-size: 13px; margin-top: 8px;">Projeções de juros compostos, teto de orçamento (50/30/20) e relatórios anuais completos em PDF/Excel.</p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
+        <div class="card" style="padding: 36px;">
+          <div style="font-size: 32px; margin-bottom: 16px;">🏦</div>
+          <h3 style="color: var(--text-main); font-size: 18px; margin-bottom: 10px;">Open Finance Automático</h3>
+          <p style="color: var(--text-muted); font-size: 14px; line-height: 1.6;">Conecte qualquer instituição financeira de forma segura via Pluggy. Os seus extratos e transações atualizam sozinhos.</p>
+        </div>
+        <div class="card" style="padding: 36px;">
+          <div style="font-size: 32px; margin-bottom: 16px;">🤖</div>
+          <h3 style="color: var(--text-main); font-size: 18px; margin-bottom: 10px;">Leitura de Faturas por IA</h3>
+          <p style="color: var(--text-muted); font-size: 14px; line-height: 1.6;">Fotografe recibos ou extratos em PDF: a nossa IA lê e preenche os campos do lançamento instantaneamente para si.</p>
+        </div>
+        <div class="card" style="padding: 36px;">
+          <div style="font-size: 32px; margin-bottom: 16px;">📈</div>
+          <h3 style="color: var(--text-main); font-size: 18px; margin-bottom: 10px;">Simulador & Orçamento 50/30/20</h3>
+          <p style="color: var(--text-muted); font-size: 14px; line-height: 1.6;">Projete o seu património a longo prazo com juros compostos e organize os envelopes de gastos do seu mês com facilidade.</p>
+        </div>
       </div>
     </div>
+
+    <!-- SEÇÃO DE SEGURANÇA E CONFIANÇA -->
+    <div style="width: 100%; background: rgba(20, 14, 36, 0.5); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 80px 20px; margin-bottom: 80px;">
+      <div style="max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; align-items: center;">
+        <div>
+          <span class="tag-chip" style="margin-bottom: 14px;">SEGURANÇA CORPORATIVA</span>
+          <h2 style="font-size: 32px; font-weight: 800; color: var(--text-main); margin-bottom: 16px; line-height: 1.2;">Os seus dados blindados com padrão bancário.</h2>
+          <p style="color: var(--text-muted); font-size: 15px; line-height: 1.6;">Utilizamos encriptação de ponta a ponta, infraestrutura robusta em nuvem (Supabase) e autenticação em duas etapas (2FA) para garantir que apenas você acede às suas informações.</p>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="card" style="text-align: center; padding: 24px;">
+            <h4 style="font-size: 28px; color: var(--accent-purple); font-weight: 800;">256-bit</h4>
+            <span style="font-size: 12px; color: var(--text-muted);">Encriptação Avançada</span>
+          </div>
+          <div class="card" style="text-align: center; padding: 24px;">
+            <h4 style="font-size: 28px; color: #10b981; font-weight: 800;">100%</h4>
+            <span style="font-size: 12px; color: var(--text-muted);">Conforme Open Finance</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO DE PERGUNTAS FREQUENTES (FAQ) -->
+    <div style="width: 100%; max-width: 900px; padding: 0 20px; margin-bottom: 100px;">
+      <div style="text-align: center; margin-bottom: 50px;">
+        <h2 style="font-size: 30px; font-weight: 800; color: var(--text-main); margin-bottom: 12px;">Perguntas Frequentes</h2>
+        <p style="color: var(--text-muted); font-size: 15px;">Tire as suas dúvidas sobre o funcionamento da plataforma.</p>
+      </div>
+      
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div class="card" style="padding: 24px;">
+          <h4 style="font-size: 16px; color: var(--text-main); font-weight: 700; margin-bottom: 8px;">O Open Finance é seguro?</h4>
+          <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">Sim! O Open Finance é regulamentado e utiliza protocolos oficiais de segurança. O FluxoPro apenas lê as suas informações autorizadas, sem nunca ter acesso às suas senhas transacionais.</p>
+        </div>
+        <div class="card" style="padding: 24px;">
+          <h4 style="font-size: 16px; color: var(--text-main); font-weight: 700; margin-bottom: 8px;">Posso usar tanto para uso pessoal quanto empresarial?</h4>
+          <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">Com certeza. No momento do registo pode selecionar o seu perfil (Singular ou Empresa), adaptando os relatórios e categorias à sua realidade.</p>
+        </div>
+        <div class="card" style="padding: 24px;">
+          <h4 style="font-size: 16px; color: var(--text-main); font-weight: 700; margin-bottom: 8px;">Como funcionam os relatórios em PDF e Excel?</h4>
+          <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">Com um único clique na aba do painel, pode exportar todo o seu histórico filtrado por período diretamente para ficheiros Excel ou PDF formatados.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- RODAPÉ CORPORATIVO -->
+    <footer style="width: 100%; background: #05030a; border-top: 1px solid var(--border-color); padding: 50px 20px; text-align: center;">
+      <div style="max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; align-items: center;">
+        <div class="brand-logo" style="margin-bottom: 0; font-size: 22px;">⚡ FluxoPro Enterprise</div>
+        <p style="font-size: 13px; color: var(--text-muted); max-width: 500px;">A solução definitiva de inteligência financeira e gestão patrimonial de alto padrão.</p>
+        <div style="font-size: 12px; color: var(--text-muted); border-top: 1px solid rgba(255,255,255,0.05); width: 100%; padding-top: 24px; margin-top: 10px;">
+          © 2026 FluxoPro Enterprise. Todos os direitos reservados.
+        </div>
+      </div>
+    </footer>
+
   </div>
 
+  <!-- ECRÃS DE AUTENTICAÇÃO (LOGIN / REGISTO) -->
   <div id="auth-screen" class="auth-wrapper" style="display: none;">
     <div class="auth-box" id="login-box">
       <div class="brand-logo">⚡ FluxoPro</div>
@@ -205,6 +274,7 @@
     </div>
   </div>
 
+  <!-- APLICAÇÃO PRINCIPAL (DASHBOARD) -->
   <div id="app-screen" class="app-container" style="display: none;">
     <aside class="sidebar">
       <div>
