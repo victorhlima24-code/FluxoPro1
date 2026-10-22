@@ -2,7 +2,7 @@
 <html lang="pt-PT">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>FluxoPro Enterprise - Gestão Financeira</title>
   <link rel="stylesheet" href="style.css">
 
@@ -195,7 +195,7 @@
           </div>
           <div class="month-filter-box">
             <button onclick="toggleStealthMode()" class="btn-secondary" id="btn-stealth" title="Ocultar/Mostrar Valores">👁️ Modo Privado</button>
-            <button onclick="sincronizarContaBancaria()" class="btn-primary" style="background: #a855f7; font-size: 0.85rem; padding: 6px 12px;" id="btn-open-finance">🏦 Ligar Banco (Open Finance)</button>
+            <button onclick="sincronizarContaBancaria()" class="btn-primary" style="background: #a855f7; font-size: 0.85rem; padding: 8px 12px;" id="btn-open-finance">🏦 Ligar Banco (Open Finance)</button>
             
             <label for="month-picker">📅 Mês:</label>
             <input type="month" id="month-picker" class="month-input">
@@ -244,10 +244,9 @@
           </div>
         </section>
 
-        <!-- Calculadora Automática de Orçamento (50/30/20) -->
         <section class="panel-card">
           <h2>⚡ Calculadora Automática de Orçamento (50 / 30 / 20)</h2>
-          <p class="subtitle" style="margin-bottom: 16px;">Insira a sua receita mensal prevista e calcule automaticamente a distribuição ideal do seu dinheiro[cite: 3].</p>
+          <p class="subtitle" style="margin-bottom: 16px;">Insira a sua receita mensal prevista e calcule automaticamente a distribuição ideal do seu dinheiro.</p>
           <div class="form-grid">
             <input type="number" id="calc-income-input" placeholder="Rendimento Mensal Total (R$)" step="0.01">
             <button type="button" class="btn-add" onclick="calcularOrcamentoAutomatico()">Calcular Distribuição</button>
@@ -391,19 +390,23 @@
               <input type="date" id="filter-date-end" title="Data Final">
             </div>
           </div>
-          <table>
-            <thead>
-              <tr>
-                <th>Data</th>
-                <th>Descrição</th>
-                <th>Categoria</th>
-                <th>Tipo</th>
-                <th>Valor</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody id="table-body"></tbody>
-          </table>
+
+          <!-- CONTENTOR RESPONSIVO DE TABELA (SENSE CORTES) -->
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Descrição</th>
+                  <th>Categoria</th>
+                  <th>Tipo</th>
+                  <th>Valor</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="table-body"></tbody>
+            </table>
+          </div>
         </section>
       </div>
 
@@ -435,18 +438,20 @@
 
         <section class="panel-card">
           <h2>As Suas Contas Agendadas</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Vencimento</th>
-                <th>Descrição</th>
-                <th>Valor</th>
-                <th>Estado</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody id="bills-table-body"></tbody>
-          </table>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Vencimento</th>
+                  <th>Descrição</th>
+                  <th>Valor</th>
+                  <th>Estado</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="bills-table-body"></tbody>
+            </table>
+          </div>
         </section>
       </div>
 
@@ -602,7 +607,7 @@
 
         <section class="panel-card">
           <h2>👨‍👩‍👧 Conta Partilhada</h2>
-          <p class="subtitle" style="margin-bottom: 14px;">Conide o seu cônjuge ou familiar para acompanhar as suas finanças (a pessoa precisa de já ter uma conta no FluxoPro).</p>
+          <p class="subtitle" style="margin-bottom: 14px;">Convide o seu cônjuge ou familiar para acompanhar as suas finanças (a pessoa precisa de já ter uma conta no FluxoPro).</p>
           <form id="form-share-invite">
             <div class="form-grid">
               <input type="email" id="share-email" placeholder="E-mail da pessoa" required>
