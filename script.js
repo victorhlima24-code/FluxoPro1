@@ -30,6 +30,7 @@ let doughnutChartInstance = null;
 let compareChartInstance = null;
 let annualChartInstance = null;
 let weeklyChartInstance = null;
+let simulatorChartInstance = null;
 let pendingDeleteAction = null;
 
 const EXCLUSION_UNDO_TIME_MS = 6000;
@@ -158,13 +159,16 @@ function maskDoc(value) {
   return value
     .replace(/\D/g, '')
     .replace(/(\d{3})(\d)/, '$1.$2')
-    .replace(/(\d{3})(\d)/, '$1.$2') .replace(/(\d{3})(\d{1,2})$/, '$1-$2') .replace(/^(\d{2})\.(\d{3})\.(\d{3})\/(\d{4})-(\d{2})$/, '$1.$2.$3/$4-$5');
+    .replace(/(\d{3})(\d)/, '$1.$2')
+    .replace(/(\d{3})(\d{1,2})$/, '$1-$2')
+    .replace(/^(\d{2})\.(\d{3})\.(\d{3})\/(\d{4})-(\d{2})$/, '$1.$2.$3/$4-$5');
 }
 
 function maskPhone(value) {
   return value
     .replace(/\D/g, '')
-    .replace(/^(\d{2})(\d)/g, '($1) $2') .replace(/(\d)(\d{4})$/, '$1-$2');
+    .replace(/^(\d{2})(\d)/g, '($1) $2')
+    .replace(/(\d)(\d{4})$/, '$1-$2');
 }
 
 function applyMasks() {
@@ -262,6 +266,10 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('app-screen').style.display = 'none';
     }
   });
+
+  setTimeout(() => {
+    if (document.getElementById('sim-initial')) calcularJurosCompostos();
+  }, 500);
 });
 
 function registerServiceWorker() {
@@ -353,6 +361,7 @@ function setupEventListeners() {
   document.getElementById('nav-categories')?.addEventListener('click', () => switchTab('section-categories', 'nav-categories'));
   document.getElementById('nav-goals')?.addEventListener('click', () => switchTab('section-goals', 'nav-goals'));
   document.getElementById('nav-investments')?.addEventListener('click', () => switchTab('section-investments', 'nav-investments'));
+  document.getElementById('nav-simulator')?.addEventListener('click', () => switchTab('section-simulator', 'nav-simulator'));
   document.getElementById('nav-accounts')?.addEventListener('click', () => switchTab('section-accounts', 'nav-accounts'));
   document.getElementById('nav-profile')?.addEventListener('click', () => switchTab('section-profile', 'nav-profile'));
   document.getElementById('nav-support')?.addEventListener('click', () => switchTab('section-support', 'nav-support'));
@@ -421,6 +430,7 @@ function switchTab(sectionId, navId) {
   if (sectionId === 'section-categories') renderCategories();
   if (sectionId === 'section-goals') renderGoals();
   if (sectionId === 'section-investments') loadInvestments();
+  if (sectionId === 'section-simulator') calcularJurosCompostos();
   if (sectionId === 'section-accounts') { renderWallets(); loadShares(); }
   if (sectionId === 'section-profile') renderMfaStatus();
 }
@@ -1726,6 +1736,84 @@ function updateCharts(filtered) {
   generateAiInsights(currentExpense, previousExpense, totalRec);
 }
 
+// Lógica de cálculo e gráfico do Simulador de Juros Compostos
+window.calcularJurosCompostos = function() {
+  const initial = parseFloat(document.getElementById('sim-initial').value) || 0;
+  const monthly = parseFloat(document.getElementById('sim-monthly').value) || 0;
+  const annualRate = parseFloat(document.getElementById('sim-rate').value) || 0;
+  const years = parseInt(document.getElementById('sim-years').value) || 0;
+
+  if (years <= 0) return alert('Insira um período válido em anos.');
+
+  const monthlyRate = Math.pow(1 + (annualRate / 100), 1 / 12) - 1;
+  let totalAmount = initial;
+  let totalInvested = initial;
+
+  const labels = ['Ano 0'];
+  const dataTotal = [initial];
+  const dataInvested = [initial];
+
+  for (let y = 1; y <= years; y++) {
+    for (let m = 1; m <= 12; m++) {
+      totalAmount = (totalAmount + monthly) * (1 + monthlyRate);
+      totalInvested += monthly;
+    }
+    labels.push(`Ano ${y}`);
+    dataTotal.push(Math.round(totalAmount * 100) / 100);
+    dataInvested.push(Math.round(totalInvested * 100) / 100);
+  }
+
+  const totalInterest = totalAmount - totalInvested;
+
+  document.getElementById('sim-res-total').innerText = `R$ ${totalAmount.toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  document.getElementById('sim-res-invested').innerText = `R$ ${totalInvested.toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  document.getElementById('sim-res-interest').innerText = `R$ ${totalInterest.toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  renderSimulatorChart(labels, dataTotal, dataInvested);
+};
+
+function renderSimulatorChart(labels, dataTotal, dataInvested) {
+  const ctx = document.getElementById('simulatorChart')?.getContext('2d');
+  if (!ctx) return;
+
+  if (simulatorChartInstance) simulatorChartInstance.destroy();
+
+  simulatorChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Património Total (R$)',
+          data: dataTotal,
+          borderColor: '#a855f7',
+          backgroundColor: 'rgba(168, 85, 247, 0.1)',
+          fill: true,
+          tension: 0.3
+        },
+        {
+          label: 'Capital Próprio Investido (R$)',
+          data: dataInvested,
+          borderColor: '#64748b',
+          borderDash: [5, 5],
+          fill: false,
+          tension: 0.3
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom' }
+      },
+      scales: {
+        y: { grid: { color: 'rgba(255, 255, 255, 0.05)' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
 function generateAiInsights(currentExpense, previousExpense, totalRec) {
   const panel = document.getElementById('painel-insights');
   if (!panel || panel.dataset.aiReal === 'true') return;
@@ -1788,7 +1876,7 @@ window.updateAiInsights = async function(force) {
     lastAiInsightTime = now;
   } catch (err) {
     console.warn('IA de insights indisponível, a manter análise local:', err.message);
-    if (force) notify('⚠️ IA indisponível de momento (a Edge Function precisa de estar publicada).');
+    if (force) notify('⚠️ IA indisponível de momento.');
     panel.dataset.aiReal = 'false';
     const btn = document.getElementById('btn-refresh-insights');
     if (btn) { btn.disabled = false; btn.innerText = '🔄 Atualizar com IA'; }
@@ -1905,7 +1993,7 @@ async function loadShares() {
 async function sincronizarContaBancaria() {
   const btn = document.getElementById('btn-open-finance');
   if (typeof PluggyConnect === 'undefined') {
-    return notify('⚠️ O widget do Pluggy não carregou (verifique a sua ligação à internet).');
+    return notify('⚠️ O widget do Pluggy não carregou.');
   }
 
   if (btn) { btn.disabled = true; btn.innerText = '🏦 A preparar ligação segura...'; }
@@ -1946,7 +2034,7 @@ async function sincronizarContaBancaria() {
     pluggyConnect.init();
   } catch (err) {
     console.error('Erro ao iniciar Open Finance:', err);
-    notify('⚠️ Open Finance indisponível de momento (as Edge Functions do Pluggy precisam de estar publicadas).');
+    notify('⚠️ Open Finance indisponível de momento.');
   } finally {
     if (btn) { btn.disabled = false; btn.innerText = '🏦 Conectar Banco (Open Finance)'; }
   }
@@ -1975,7 +2063,7 @@ async function importViaPluggy(itemId) {
     await loadWallets();
   } catch (err) {
     console.error('Erro ao importar dados do Pluggy:', err);
-    notify('⚠️ O banco ligou-se, mas não foi possível importar as transações de momento. Tente sincronizar novamente.');
+    notify('⚠️ O banco ligou-se, mas não foi possível importar as transações.');
   }
 }
 
@@ -2019,7 +2107,7 @@ window.lerNotaFiscalViaIA = async function(file) {
   } catch (err) {
     console.error('Erro no OCR de nota fiscal:', err);
     if (statusOcr) statusOcr.innerText = '⚠️ Não foi possível ler a nota. Preencha manualmente.';
-    notify('⚠️ Leitura por IA indisponível de momento (a Edge Function precisa de estar publicada).');
+    notify('⚠️ Leitura por IA indisponível de momento.');
   }
 };
 
