@@ -357,7 +357,7 @@ body.stealth-mode td:nth-child(5):hover {
   filter: blur(2px);
 }
 
-/* --- ESTILOS ADICIONAIS PARA COMPROVATIVOS E PROJEÇÃO --- */
+/* ESTILOS ADICIONAIS PARA COMPROVATIVOS E PROJEÇÃO */
 .receipt-thumb-link {
   font-size: 11px;
   color: var(--accent-purple);
