@@ -237,6 +237,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   _supabase.auth.onAuthStateChange(async (event, session) => {
     if (event === 'PASSWORD_RECOVERY') {
+      const landing = document.getElementById('landing-screen');
+      if (landing) landing.style.display = 'none';
       document.getElementById('auth-screen').style.display = 'flex';
       document.getElementById('login-box').style.display = 'none';
       document.getElementById('forgot-box').style.display = 'none';
@@ -245,6 +247,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (session && session.user) {
+      const landing = document.getElementById('landing-screen');
+      if (landing) landing.style.display = 'none';
+
       const { data: aal } = await _supabase.auth.mfa.getAuthenticatorAssuranceLevel();
       if (aal && aal.nextLevel === 'aal2' && aal.nextLevel !== aal.currentLevel) {
         showMfaScreen();
@@ -262,7 +267,9 @@ document.addEventListener('DOMContentLoaded', () => {
       startSystem();
     } else {
       currentUser = null;
-      document.getElementById('auth-screen').style.display = 'flex';
+      const landing = document.getElementById('landing-screen');
+      if (landing) landing.style.display = 'block';
+      document.getElementById('auth-screen').style.display = 'none';
       document.getElementById('app-screen').style.display = 'none';
     }
   });
@@ -287,6 +294,8 @@ function showMfaScreen() {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
+  const landing = document.getElementById('landing-screen');
+  if (landing) landing.style.display = 'none';
   document.getElementById('auth-screen').style.display = 'flex';
   document.getElementById('mfa-verify-box').style.display = 'block';
 }
@@ -436,6 +445,8 @@ function switchTab(sectionId, navId) {
 }
 
 async function startSystem() {
+  const landing = document.getElementById('landing-screen');
+  if (landing) landing.style.display = 'none';
   document.getElementById('auth-screen').style.display = 'none';
   document.getElementById('app-screen').style.display = 'flex';
   document.getElementById('user-display-name').innerText = currentUser.name || currentUser.email;
@@ -1022,7 +1033,7 @@ window.addGoalAmount = async function(id) {
   const { error } = await _supabase.from('goals').update({ saved: newSaved }).eq('id', id);
   if (error) return alert('Erro ao atualizar meta: ' + error.message);
 
-  notify(newSaved >= goal.target ? '🎉 Meta atingida! Parabéns!' : 'Valor adicionado à meta!');
+  notify(newSaved >= goal.target ? '🏆 Meta atingida! Parabéns!' : 'Valor adicionado à meta!');
   loadGoals();
 };
 
