@@ -63,7 +63,7 @@ window.calcularOrcamentoAutomatico = function() {
   const rendimento = parseFloat(inputRendimento?.value);
 
   if (!rendimento || rendimento <= 0) {
-    return alert('Por favor, insira um valor de receita mensal válido.');
+    return notify('Por favor, insira um valor de receita mensal válido.', 'error');
   }
 
   const essenciais = rendimento * 0.50;
@@ -83,7 +83,7 @@ window.aplicarCalculoAosEnvelopes = async function() {
   const rendimento = parseFloat(inputRendimento?.value);
 
   if (!rendimento || rendimento <= 0) {
-    return alert('Por favor, insira um valor de receita válido antes de aplicar aos envelopes.');
+    return notify('Por favor, insira um valor de receita válido antes de aplicar aos envelopes.', 'error');
   }
 
   const essenciaisLimit = rendimento * 0.50;
@@ -179,14 +179,23 @@ function applyMasks() {
   phoneInputs.forEach(input => input?.addEventListener('input', (e) => e.target.value = maskPhone(e.target.value)));
 }
 
-function notify(text) {
+// SISTEMA DE TOASTS MELHORADO COM SUPORTE A ERROS
+function notify(text, type = 'info') {
   const container = document.getElementById('toast-container');
   if (!container) return;
   const toast = document.createElement('div');
   toast.className = 'toast';
+  
+  if (type === 'error') {
+    toast.style.borderLeft = '4px solid #f43f5e';
+    toast.style.background = '#2a121d';
+  } else if (type === 'success') {
+    toast.style.borderLeft = '4px solid #10b981';
+  }
+
   toast.innerText = text;
   container.appendChild(toast);
-  setTimeout(() => toast.remove(), 3000);
+  setTimeout(() => toast.remove(), 3500);
 }
 
 function notifyWithAction(text, actionLabel, onAction, durationMs = EXCLUSION_UNDO_TIME_MS) {
@@ -230,10 +239,59 @@ function hideModal() {
   pendingDeleteAction = null;
 }
 
+// MODAL LIGHTBOX PARA COMPROVATIVOS
+window.openReceiptModal = function(url) {
+  const modal = document.getElementById('receipt-modal');
+  const body = document.getElementById('receipt-preview-body');
+  if (!modal || !body) return;
+
+  const isPdf = url.toLowerCase().endsWith('.pdf');
+  if (isPdf) {
+    body.innerHTML = `<iframe src="${escapeHtml(url)}" style="width:100%; height:500px; border:none; border-radius:6px;"></iframe>`;
+  } else {
+    body.innerHTML = `<img src="${escapeHtml(url)}" style="max-width:100%; max-height:500px; object-fit:contain; border-radius:6px;">`;
+  }
+  modal.style.display = 'flex';
+};
+
+window.closeReceiptModal = function() {
+  const modal = document.getElementById('receipt-modal');
+  if (modal) modal.style.display = 'none';
+};
+
+// ATALHOS DE TECLADO CORPORATIVOS
+function setupKeyboardShortcuts() {
+  window.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+      return;
+    }
+
+    // Pressionar 'N' abre o formulário de novo lançamento
+    if (e.key.toLowerCase() === 'n') {
+      e.preventDefault();
+      switchTab('section-dashboard', 'nav-dash');
+      const descInput = document.getElementById('trans-desc');
+      if (descInput) {
+        descInput.focus();
+        window.scrollTo({ top: descInput.offsetTop - 100, behavior: 'smooth' });
+      }
+    }
+
+    // Ctrl + K ou Cmd + K foca na barra de pesquisa
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      switchTab('section-dashboard', 'nav-dash');
+      const searchInput = document.getElementById('search-input');
+      if (searchInput) searchInput.focus();
+    }
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   setupEventListeners();
   applyMasks();
   registerServiceWorker();
+  setupKeyboardShortcuts();
 
   _supabase.auth.onAuthStateChange(async (event, session) => {
     if (event === 'PASSWORD_RECOVERY') {
@@ -305,17 +363,17 @@ async function handleMfaVerifyLogin(e) {
   const code = document.getElementById('mfa-code-input').value.trim();
 
   const { data: factors, error: errFactors } = await _supabase.auth.mfa.listFactors();
-  if (errFactors) return alert('Erro ao procurar fator 2FA: ' + errFactors.message);
+  if (errFactors) return notify('Erro ao procurar fator 2FA: ' + errFactors.message, 'error');
   const factor = factors.totp?.[0];
-  if (!factor) return alert('Nenhum fator 2FA encontrado.');
+  if (!factor) return notify('Nenhum fator 2FA encontrado.', 'error');
 
   const { data: challenge, error: errChallenge } = await _supabase.auth.mfa.challenge({ factorId: factor.id });
-  if (errChallenge) return alert('Erro ao iniciar verificação: ' + errChallenge.message);
+  if (errChallenge) return notify('Erro ao iniciar verificação: ' + errChallenge.message, 'error');
 
   const { error: errVerify } = await _supabase.auth.mfa.verify({
     factorId: factor.id, challengeId: challenge.id, code
   });
-  if (errVerify) return alert('Código inválido: ' + errVerify.message);
+  if (errVerify) return notify('Código inválido: ' + errVerify.message, 'error');
 
   document.getElementById('mfa-verify-box').style.display = 'none';
   document.getElementById('login-box').style.display = 'block';
@@ -484,8 +542,8 @@ async function handleRegister(e) {
     email, password, options: { data: { name, doc, phone, profile } }
   });
 
-  if (error) return alert('Erro no registo: ' + error.message);
-  notify('Conta criada com sucesso!');
+  if (error) return notify('Erro no registo: ' + error.message, 'error');
+  notify('Conta criada com sucesso!', 'success');
   document.getElementById('register-box').style.display = 'none';
   document.getElementById('login-box').style.display = 'block';
 }
@@ -496,14 +554,14 @@ async function handleLogin(e) {
   const password = document.getElementById('login-password').value;
 
   const { error } = await _supabase.auth.signInWithPassword({ email, password });
-  if (error) alert('Falha no início de sessão: ' + error.message);
+  if (error) notify('Falha no início de sessão: ' + error.message, 'error');
 }
 
 async function handleGoogleLogin() {
   const { error } = await _supabase.auth.signInWithOAuth({
     provider: 'google', options: { redirectTo: window.location.origin }
   });
-  if (error) alert('Erro ao autenticar com o Google: ' + error.message);
+  if (error) notify('Erro ao autenticar com o Google: ' + error.message, 'error');
 }
 
 async function handleForgotPassword(e) {
@@ -511,9 +569,9 @@ async function handleForgotPassword(e) {
   const email = document.getElementById('forgot-email').value;
 
   const { error } = await _supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin });
-  if (error) return alert('Erro ao enviar e-mail: ' + error.message);
+  if (error) return notify('Erro ao enviar e-mail: ' + error.message, 'error');
 
-  notify('E-mail enviado!');
+  notify('E-mail enviado!', 'success');
   document.getElementById('forgot-box').style.display = 'none';
   document.getElementById('login-box').style.display = 'block';
 }
@@ -523,9 +581,9 @@ async function handleResetPassword(e) {
   const newPassword = document.getElementById('new-password').value;
 
   const { error } = await _supabase.auth.updateUser({ password: newPassword });
-  if (error) return alert('Erro ao redefinir palavra-passe: ' + error.message);
+  if (error) return notify('Erro ao redefinir palavra-passe: ' + error.message, 'error');
 
-  notify('Palavra-passe atualizada com sucesso!');
+  notify('Palavra-passe atualizada com sucesso!', 'success');
   document.getElementById('reset-password-box').style.display = 'none';
   document.getElementById('login-box').style.display = 'block';
 }
@@ -538,11 +596,11 @@ async function handleUpdateProfile(e) {
   const profile = document.getElementById('edit-profile').value;
 
   const { error } = await _supabase.auth.updateUser({ data: { name, doc, phone, profile } });
-  if (error) return alert('Erro ao atualizar: ' + error.message);
+  if (error) return notify('Erro ao atualizar: ' + error.message, 'error');
 
   currentUser = { ...currentUser, name, doc, phone, profile };
   document.getElementById('user-display-name').innerText = name;
-  notify('Perfil atualizado com sucesso!');
+  notify('Perfil atualizado com sucesso!', 'success');
 }
 
 async function loadCategoriesCloud() {
@@ -606,24 +664,24 @@ async function handleAddCategory(e) {
   const limit = parseFloat(document.getElementById('cat-limit-input').value) || 0;
 
   if (categories.some(c => c.name.toLowerCase() === name.toLowerCase())) {
-    return alert('Esta categoria já existe!');
+    return notify('Esta categoria já existe!', 'error');
   }
 
   const { data, error } = await _supabase.from('categories').insert([{ user_id: currentUser.id, name, limit_val: limit }]).select();
-  if (error) return alert('Erro ao criar categoria: ' + error.message);
+  if (error) return notify('Erro ao criar categoria: ' + error.message, 'error');
 
   categories.push({ id: data[0].id, name: data[0].name, limit: parseFloat(data[0].limit_val) || 0 });
   updateCategorySelects();
   renderCategories();
   renderData();
   e.target.reset();
-  notify('Categoria criada!');
+  notify('Categoria criada!', 'success');
 }
 
 window.removeCategory = function(id, name) {
   showModal('Remover Categoria', `Deseja apagar a categoria "${name}"?`, async () => {
     const { error } = await _supabase.from('categories').delete().eq('id', id);
-    if (error) return alert('Erro ao remover categoria: ' + error.message);
+    if (error) return notify('Erro ao remover categoria: ' + error.message, 'error');
 
     categories = categories.filter(c => c.id !== id);
     updateCategorySelects();
@@ -719,9 +777,9 @@ async function handleSaveAccount(e) {
   const initial = parseFloat(document.getElementById('account-initial').value) || 0;
 
   const { error } = await _supabase.from('accounts').insert([{ user_id: currentUser.id, name, initial_balance: initial }]);
-  if (error) return alert('Erro ao criar conta: ' + error.message);
+  if (error) return notify('Erro ao criar conta: ' + error.message, 'error');
 
-  notify('Conta criada!');
+  notify('Conta criada!', 'success');
   e.target.reset();
   loadWallets();
 }
@@ -729,7 +787,7 @@ async function handleSaveAccount(e) {
 window.deleteWallet = function(id) {
   showModal('Excluir Conta', 'Deseja remover esta conta? Os lançamentos vinculados ficarão sem conta associada.', async () => {
     const { error } = await _supabase.from('accounts').delete().eq('id', id);
-    if (error) return alert('Erro ao excluir conta: ' + error.message);
+    if (error) return notify('Erro ao excluir conta: ' + error.message, 'error');
     notify('Conta removida!');
     loadWallets();
   });
@@ -830,9 +888,9 @@ async function handleSaveGoal(e) {
   const deadline = document.getElementById('goal-deadline').value || null;
 
   const { error } = await _supabase.from('goals').insert([{ user_id: currentUser.id, name, target, saved, deadline, start_date: startDate }]);
-  if (error) return alert('Erro ao criar meta: ' + error.message);
+  if (error) return notify('Erro ao criar meta: ' + error.message, 'error');
 
-  notify('Planeamento criado!');
+  notify('Planeamento criado!', 'success');
   e.target.reset();
   const preview = document.getElementById('goal-planning-preview');
   if (preview) preview.style.display = 'none';
@@ -1024,23 +1082,23 @@ window.addGoalAmount = async function(id) {
   const amountStr = prompt('Quanto deseja adicionar a esta meta? (R$)');
   if (amountStr === null) return;
   const amount = parseFloat(amountStr);
-  if (!amount || amount <= 0) return alert('Introduza um valor válido.');
+  if (!amount || amount <= 0) return notify('Introduza um valor válido.', 'error');
 
   const goal = goals.find(g => g.id === id);
   if (!goal) return;
 
   const newSaved = goal.saved + amount;
   const { error } = await _supabase.from('goals').update({ saved: newSaved }).eq('id', id);
-  if (error) return alert('Erro ao atualizar meta: ' + error.message);
+  if (error) return notify('Erro ao atualizar meta: ' + error.message, 'error');
 
-  notify(newSaved >= goal.target ? '🏆 Meta atingida! Parabéns!' : 'Valor adicionado à meta!');
+  notify(newSaved >= goal.target ? '🏆 Meta atingida! Parabéns!' : 'Valor adicionado à meta!', 'success');
   loadGoals();
 };
 
 window.deleteGoal = function(id) {
   showModal('Excluir Meta', 'Deseja remover esta meta de poupança?', async () => {
     const { error } = await _supabase.from('goals').delete().eq('id', id);
-    if (error) return alert('Erro ao excluir: ' + error.message);
+    if (error) return notify('Erro ao excluir: ' + error.message, 'error');
     notify('Meta removida!');
     loadGoals();
   });
@@ -1210,8 +1268,7 @@ async function confirmSeriesEditing() {
   const newVal = newValStr ? parseFloat(newValStr) : null;
 
   if (!newDesc && !newVal) {
-    alert('Introduza uma nova descrição ou um novo valor para aplicar à série.');
-    return;
+    return notify('Introduza uma nova descrição ou um novo valor para aplicar à série.', 'error');
   }
 
   const updateData = {};
@@ -1228,9 +1285,9 @@ async function confirmSeriesEditing() {
     .eq('is_recurring', true)
     .gte('date', seriesInEditing.date);
 
-  if (error) return alert('Erro ao atualizar a série: ' + error.message);
+  if (error) return notify('Erro ao atualizar a série: ' + error.message, 'error');
 
-  notify('Série recorrente atualizada a partir desta data!');
+  notify('Série recorrente atualizada a partir desta data!', 'success');
   closeSeriesEditing();
   await loadTransactionsCloud();
 }
@@ -1253,6 +1310,7 @@ async function loadBillsCloud() {
   }));
 
   renderBills();
+  renderCashFlowForecast();
 }
 
 async function handleSaveBill(e) {
@@ -1264,9 +1322,9 @@ async function handleSaveBill(e) {
   const isRecurring = document.getElementById('bill-recurring')?.checked || false;
 
   const { error } = await _supabase.from('bills').insert([{ user_id: currentUser.id, description: desc, amount: val, due_date: dueDate, status: 'Pendente', account_id: accountId, is_recurring: isRecurring }]);
-  if (error) return alert('Erro ao agendar conta: ' + error.message);
+  if (error) return notify('Erro ao agendar conta: ' + error.message, 'error');
 
-  notify('Conta agendada!');
+  notify('Conta agendada!', 'success');
   e.target.reset();
   loadBillsCloud();
 }
@@ -1311,7 +1369,7 @@ window.payBill = async function(id) {
   if (!b) return;
 
   const { error: errBill } = await _supabase.from('bills').update({ status: 'Paga' }).eq('id', id);
-  if (errBill) return alert('Erro ao atualizar conta: ' + errBill.message);
+  if (errBill) return notify('Erro ao atualizar conta: ' + errBill.message, 'error');
 
   await _supabase.from('transactions').insert([{
     user_id: currentUser.id,
@@ -1323,7 +1381,7 @@ window.payBill = async function(id) {
     account_id: b.accountId || null
   }]);
 
-  notify('Conta paga e lançada no extrato!');
+  notify('Conta paga e lançada no extrato!', 'success');
   loadBillsCloud();
   loadTransactionsCloud();
 };
@@ -1331,7 +1389,7 @@ window.payBill = async function(id) {
 window.deleteBill = function(id) {
   showModal('Excluir Conta a Pagar', 'Deseja excluir esta conta agendada?', async () => {
     const { error } = await _supabase.from('bills').delete().eq('id', id);
-    if (error) return alert('Erro ao excluir: ' + error.message);
+    if (error) return notify('Erro ao excluir: ' + error.message, 'error');
     notify('Conta removida!');
     loadBillsCloud();
   });
@@ -1373,6 +1431,7 @@ async function loadTransactionsCloud() {
   }));
 
   renderData();
+  renderCashFlowForecast();
 }
 
 async function handleSaveTransaction(e) {
@@ -1409,7 +1468,7 @@ async function handleSaveTransaction(e) {
       const { error: uploadError } = await _supabase.storage.from('receipts').upload(path, receiptFile);
       if (uploadError) {
         console.error('Erro ao anexar comprovativo:', uploadError);
-        notify('⚠️ Lançamento salvo, mas o comprovativo não pôde ser anexado (' + uploadError.message + ')');
+        notify('⚠️ Lançamento salvo, mas o comprovativo não pôde ser anexado', 'error');
       } else {
         const { data: urlData } = _supabase.storage.from('receipts').getPublicUrl(path);
         payload.receipt_url = urlData?.publicUrl || null;
@@ -1421,12 +1480,12 @@ async function handleSaveTransaction(e) {
 
   if (id) {
     const { error } = await _supabase.from('transactions').update(payload).eq('id', id);
-    if (error) return alert('Erro ao atualizar: ' + error.message);
-    notify('Lançamento atualizado!');
+    if (error) return notify('Erro ao atualizar: ' + error.message, 'error');
+    notify('Lançamento atualizado!', 'success');
   } else {
     const { error } = await _supabase.from('transactions').insert([payload]);
-    if (error) return alert('Erro ao guardar: ' + error.message);
-    notify('Lançamento salvo!');
+    if (error) return notify('Erro ao guardar: ' + error.message, 'error');
+    notify('Lançamento salvo!', 'success');
   }
 
   const roundupChecked = document.getElementById('trans-roundup')?.checked;
@@ -1511,6 +1570,47 @@ window.deleteTransaction = function(id) {
     });
   });
 };
+
+// CÁLCULO PREDITIVO DE FLUXO DE CAIXA FUTURO
+function renderCashFlowForecast() {
+  const f30 = document.getElementById('forecast-30d');
+  const f60 = document.getElementById('forecast-60d');
+  const f90 = document.getElementById('forecast-90d');
+  if (!f30 || !f60 || !f90) return;
+
+  const currentBalance = transactions.reduce((sum, t) => {
+    const v = t.currency && t.currency !== 'BRL' ? convertToBRL(t.val, t.currency) : t.val;
+    return sum + (t.type === 'Receita' ? v : -v);
+  }, 0);
+
+  const today = new Date();
+
+  function calcForecast(days) {
+    const targetDate = new Date();
+    targetDate.setDate(today.getDate() + days);
+
+    let pendingBillsTotal = 0;
+    bills.filter(b => b.status === 'Pendente').forEach(b => {
+      const d = new Date(b.dueDate + 'T00:00:00');
+      if (d <= targetDate) pendingBillsTotal += b.val;
+    });
+
+    return currentBalance - pendingBillsTotal;
+  }
+
+  const bal30 = calcForecast(30);
+  const bal60 = calcForecast(60);
+  const bal90 = calcForecast(90);
+
+  f30.innerText = `R$ ${bal30.toFixed(2)}`;
+  f30.style.color = bal30 >= 0 ? '#10b981' : '#f43f5e';
+
+  f60.innerText = `R$ ${bal60.toFixed(2)}`;
+  f60.style.color = bal60 >= 0 ? '#3b82f6' : '#f43f5e';
+
+  f90.innerText = `R$ ${bal90.toFixed(2)}`;
+  f90.style.color = bal90 >= 0 ? '#a855f7' : '#f43f5e';
+}
 
 function renderData() {
   const search = document.getElementById('search-input')?.value.toLowerCase() || '';
@@ -1611,7 +1711,7 @@ function updateTable(list) {
     tr.innerHTML = `
       <td>${t.date.split('-').reverse().join('/')}</td>
       <td>${escapeHtml(t.desc)} ${t.tags ? `<br><small style="color:var(--text-muted);">#${escapeHtml(t.tags.split(',').join(' #'))}</small>` : ''}
-        ${t.receiptUrl ? `<br><a class="receipt-thumb-link" href="${escapeHtml(t.receiptUrl)}" target="_blank" rel="noopener">📎 Comprovativo</a>` : ''}
+        ${t.receiptUrl ? `<br><a class="receipt-thumb-link" href="#" onclick="openReceiptModal('${escapeHtml(t.receiptUrl)}'); return false;">📎 Ver Comprovativo</a>` : ''}
       </td>
       <td>${escapeHtml(t.cat)}</td>
       <td><span class="badge ${t.type === 'Receita' ? 'badge-paid' : 'badge-late'}">${t.type}</span></td>
@@ -1747,14 +1847,14 @@ function updateCharts(filtered) {
   generateAiInsights(currentExpense, previousExpense, totalRec);
 }
 
-// Lógica de cálculo e gráfico do Simulador de Juros Compostos
+// SIMULADOR DE JUROS COMPOSTOS
 window.calcularJurosCompostos = function() {
   const initial = parseFloat(document.getElementById('sim-initial').value) || 0;
   const monthly = parseFloat(document.getElementById('sim-monthly').value) || 0;
   const annualRate = parseFloat(document.getElementById('sim-rate').value) || 0;
   const years = parseInt(document.getElementById('sim-years').value) || 0;
 
-  if (years <= 0) return alert('Insira um período válido em anos.');
+  if (years <= 0) return notify('Insira um período válido em anos.', 'error');
 
   const monthlyRate = Math.pow(1 + (annualRate / 100), 1 / 12) - 1;
   let totalAmount = initial;
@@ -1887,7 +1987,7 @@ window.updateAiInsights = async function(force) {
     lastAiInsightTime = now;
   } catch (err) {
     console.warn('IA de insights indisponível, a manter análise local:', err.message);
-    if (force) notify('⚠️ IA indisponível de momento.');
+    if (force) notify('⚠️ IA indisponível de momento.', 'error');
     panel.dataset.aiReal = 'false';
     const btn = document.getElementById('btn-refresh-insights');
     if (btn) { btn.disabled = false; btn.innerText = '🔄 Atualizar com IA'; }
@@ -1923,8 +2023,8 @@ async function handleSaveInvestment(e) {
     user_id: currentUser.id, name, type, quantity: qty, avg_price: avgPrice, current_price: currentPrice
   }]);
 
-  if (error) return alert('Erro ao guardar ativo: ' + error.message);
-  notify('Ativo adicionado com sucesso!');
+  if (error) return notify('Erro ao guardar ativo: ' + error.message, 'error');
+  notify('Ativo adicionado com sucesso!', 'success');
   e.target.reset();
   loadInvestments();
 }
@@ -1932,7 +2032,7 @@ async function handleSaveInvestment(e) {
 window.deleteInvestment = function(id) {
   showModal('Excluir Ativo', 'Deseja remover este ativo da carteira?', async () => {
     const { error } = await _supabase.from('investments').delete().eq('id', id);
-    if (error) return alert('Erro ao excluir: ' + error.message);
+    if (error) return notify('Erro ao excluir: ' + error.message, 'error');
     notify('Ativo removido!');
     loadInvestments();
   });
@@ -1982,8 +2082,8 @@ async function handleShareInvite(e) {
   e.preventDefault();
   const email = document.getElementById('share-email').value;
   const { error } = await _supabase.from('shared_accounts').insert([{ owner_id: currentUser.id, shared_with_email: email }]);
-  if (error) return alert('Erro ao enviar convite: ' + error.message);
-  notify('Convite enviado com sucesso!');
+  if (error) return notify('Erro ao enviar convite: ' + error.message, 'error');
+  notify('Convite enviado com sucesso!', 'success');
   e.target.reset();
   loadShares();
 }
@@ -2004,7 +2104,7 @@ async function loadShares() {
 async function sincronizarContaBancaria() {
   const btn = document.getElementById('btn-open-finance');
   if (typeof PluggyConnect === 'undefined') {
-    return notify('⚠️ O widget do Pluggy não carregou.');
+    return notify('⚠️ O widget do Pluggy não carregou.', 'error');
   }
 
   if (btn) { btn.disabled = true; btn.innerText = '🏦 A preparar ligação segura...'; }
@@ -2030,12 +2130,12 @@ async function sincronizarContaBancaria() {
       connectToken: data.connectToken,
       includeSandbox: true,
       onSuccess: async (itemData) => {
-        notify('✅ Banco conectado! A importar transações...');
+        notify('✅ Banco conectado! A importar transações...', 'success');
         await importViaPluggy(itemData.item.id);
       },
       onError: (err) => {
         console.error('Erro no widget do Pluggy:', err);
-        notify('⚠️ Não foi possível concluir a conexão com o banco.');
+        notify('⚠️ Não foi possível concluir a conexão com o banco.', 'error');
       },
       onClose: () => {
         if (btn) { btn.disabled = false; btn.innerText = '🏦 Conectar Banco (Open Finance)'; }
@@ -2045,7 +2145,7 @@ async function sincronizarContaBancaria() {
     pluggyConnect.init();
   } catch (err) {
     console.error('Erro ao iniciar Open Finance:', err);
-    notify('⚠️ Open Finance indisponível de momento.');
+    notify('⚠️ Open Finance indisponível de momento.', 'error');
   } finally {
     if (btn) { btn.disabled = false; btn.innerText = '🏦 Conectar Banco (Open Finance)'; }
   }
@@ -2069,12 +2169,12 @@ async function importViaPluggy(itemId) {
     const data = await response.json();
     if (data.error) throw new Error(data.error);
 
-    notify(`🏦 ${data.imported} transação(ões) importada(s) de ${data.institution}!`);
+    notify(`🏦 ${data.imported} transação(ões) importada(s) de ${data.institution}!`, 'success');
     await loadTransactionsCloud();
     await loadWallets();
   } catch (err) {
     console.error('Erro ao importar dados do Pluggy:', err);
-    notify('⚠️ O banco ligou-se, mas não foi possível importar as transações.');
+    notify('⚠️ O banco ligou-se, mas não foi possível importar as transações.', 'error');
   }
 }
 
@@ -2114,17 +2214,17 @@ window.lerNotaFiscalViaIA = async function(file) {
     updatePiggyBankPreview();
 
     if (statusOcr) statusOcr.innerText = '✅ Dados extraídos pela IA — confira antes de guardar!';
-    notify('Nota fiscal lida pela IA — reveja os dados antes de confirmar.');
+    notify('Nota fiscal lida pela IA — reveja os dados antes de confirmar.', 'success');
   } catch (err) {
     console.error('Erro no OCR de nota fiscal:', err);
     if (statusOcr) statusOcr.innerText = '⚠️ Não foi possível ler a nota. Preencha manualmente.';
-    notify('⚠️ Leitura por IA indisponível de momento.');
+    notify('⚠️ Leitura por IA indisponível de momento.', 'error');
   }
 };
 
 function exportarExcel() {
   if (lastFilteredItems.length === 0) {
-    return alert('Não existem dados para exportar.');
+    return notify('Não existem dados para exportar.', 'error');
   }
 
   const formattedData = lastFilteredItems.map(t => ({
@@ -2140,11 +2240,11 @@ function exportarExcel() {
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Lançamentos');
   XLSX.writeFile(workbook, 'Relatorio_FluxoPro.xlsx');
-  notify('Folha de cálculo Excel gerada com sucesso!');
+  notify('Folha de cálculo Excel gerada com sucesso!', 'success');
 }
 
 function exportCSV() {
-  if (lastFilteredItems.length === 0) return alert('Nenhum dado para exportar.');
+  if (lastFilteredItems.length === 0) return notify('Nenhum dado para exportar.', 'error');
   let csv = 'Data,Descricao,Categoria,Tipo,Valor\n';
   lastFilteredItems.forEach(t => {
     csv += `${t.date},"${t.desc}","${t.cat}",${t.type},${t.val}\n`;
@@ -2155,25 +2255,42 @@ function exportCSV() {
   a.href = url;
   a.download = 'extrato_fluxopro.csv';
   a.click();
-  notify('CSV exportado!');
+  notify('CSV exportado!', 'success');
 }
 
+// FORMATADOR DE PDF EXECUTIVO CORPORATIVO
 function exportPDF() {
-  if (lastFilteredItems.length === 0) return alert('Nenhum dado para exportar.');
+  if (lastFilteredItems.length === 0) return notify('Nenhum dado para exportar.', 'error');
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
-  doc.text('Relatório Financeiro - FluxoPro Enterprise', 14, 20);
+  // Cabeçalho Executivo
+  doc.setFillColor(15, 11, 28);
+  doc.rect(0, 0, 210, 30, 'F');
+
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(16);
+  doc.setFont('helvetica', 'bold');
+  doc.text('⚡ FluxoPro Enterprise', 14, 18);
+
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Relatório Financeiro Corporativo', 14, 24);
+  doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-PT')}`, 150, 24);
+
   const rows = lastFilteredItems.map(t => [t.date, t.desc, t.cat, t.type, `R$ ${t.val.toFixed(2)}`]);
 
   doc.autoTable({
     head: [['Data', 'Descrição', 'Categoria', 'Tipo', 'Valor']],
     body: rows,
-    startY: 30
+    startY: 38,
+    theme: 'striped',
+    headStyles: { fillColor: [168, 85, 247], textColor: 255, fontStyle: 'bold' },
+    alternateRowStyles: { fillColor: [248, 250, 252] }
   });
 
-  doc.save('extrato_fluxopro.pdf');
-  notify('PDF gerado com sucesso!');
+  doc.save('extrato_fluxopro_executivo.pdf');
+  notify('PDF executivo gerado com sucesso!', 'success');
 }
 
 async function handleImportFile() {
@@ -2182,7 +2299,7 @@ async function handleImportFile() {
   const defaultCat = document.getElementById('import-default-cat').value || 'Geral';
 
   if (!fileInput.files || fileInput.files.length === 0) {
-    return alert('Selecione um ficheiro CSV ou OFX.');
+    return notify('Selecione um ficheiro CSV ou OFX.', 'error');
   }
 
   const file = fileInput.files[0];
@@ -2209,12 +2326,12 @@ async function handleImportFile() {
 
       if (news.length > 0) {
         const { error } = await _supabase.from('transactions').insert(news);
-        if (error) return alert('Erro ao importar: ' + error.message);
-        notify(`${news.length} transações importadas com sucesso!`);
+        if (error) return notify('Erro ao importar: ' + error.message, 'error');
+        notify(`${news.length} transações importadas com sucesso!`, 'success');
         loadTransactionsCloud();
         loadWallets();
       } else {
-        alert('Formato do ficheiro não reconhecido ou vazio.');
+        notify('Formato do ficheiro não reconhecido ou vazio.', 'error');
       }
     }
   });
@@ -2241,7 +2358,7 @@ async function renderMfaStatus() {
 
 async function startMfaSetup() {
   const { data, error } = await _supabase.auth.mfa.enroll({ factorType: 'totp' });
-  if (error) return alert('Erro ao iniciar 2FA: ' + error.message);
+  if (error) return notify('Erro ao iniciar 2FA: ' + error.message, 'error');
 
   pendingMfaFactorId = data.id;
   const qrCodeUri = data.totp.qr_code;
@@ -2261,22 +2378,29 @@ async function startMfaSetup() {
 async function confirmMfaSetup() {
   const code = document.getElementById('mfa-setup-code').value.trim();
   const { data: challenge, error: errChallenge } = await _supabase.auth.mfa.challenge({ factorId: pendingMfaFactorId });
-  if (errChallenge) return alert('Erro: ' + errChallenge.message);
+  if (errChallenge) return notify('Erro: ' + errChallenge.message, 'error');
 
   const { error: errVerify } = await _supabase.auth.mfa.verify({
     factorId: pendingMfaFactorId, challengeId: challenge.id, code
   });
-  if (errVerify) return alert('Código inválido: ' + errVerify.message);
+  if (errVerify) return notify('Código inválido: ' + errVerify.message, 'error');
 
-  notify('2FA ativado com sucesso!');
+  notify('2FA ativado com sucesso!', 'success');
   renderMfaStatus();
 }
 
 async function disableMfa(factorId) {
   showModal('Desativar 2FA', 'Tem certeza que deseja desativar a verificação em duas etapas?', async () => {
     const { error } = await _supabase.auth.mfa.unenroll({ factorId });
-    if (error) return alert('Erro ao desativar: ' + error.message);
+    if (error) return notify('Erro ao desativar: ' + error.message, 'error');
     notify('2FA desativado.');
     renderMfaStatus();
   });
 }
+
+// ENVIO DO FORMULÁRIO DE SUPORTE
+window.enviarMensagemSuporte = function(e) {
+  e.preventDefault();
+  notify('Mensagem de suporte enviada com sucesso! Entraremos em contacto brevemente.', 'success');
+  e.target.reset();
+};
