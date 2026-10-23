@@ -52,7 +52,7 @@
   </div>
 
   <!-- LANDING PAGE PROFISSIONAL -->
-  <div id="landing-screen" style="display: block; width: 100%; min-height: 100vh; background: var(--bg-primary); overflow-y: auto; position: absolute; top: 0; left: 0; z-index: 9999;">
+  <div id="landing-screen" style="display: block; width: 100%; min-height: 100vh; background: var(--bg-primary); overflow-y: auto; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 99999;">
     
     <!-- NAVBAR SUPERIOR -->
     <nav style="width: 100%; max-width: 1200px; display: flex; justify-content: space-between; align-items: center; padding: 24px 20px; margin: 0 auto; position: fixed; top: 0; left: 0; right: 0; background: rgba(9, 7, 15, 0.95); backdrop-filter: blur(16px); z-index: 1000; border-bottom: 1px solid var(--border-color);">
@@ -850,17 +850,6 @@
 
     </main>
   </div>
-
-  <script>
-    // Se o Supabase detetar que o utilizador já está logado, oculta a landing page e o ecrân de auth
-    window.addEventListener('DOMContentLoaded', async () => {
-      const { data: { session } } = await _supabase.auth.getSession();
-      if (session && session.user) {
-        document.getElementById('landing-screen').style.display = 'none';
-        document.getElementById('auth-screen').style.display = 'none';
-      }
-    });
-  </script>
 
 </body>
 </html>
