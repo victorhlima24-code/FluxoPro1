@@ -25,6 +25,7 @@
 
   <div id="toast-container"></div>
 
+  <!-- MODAL DE CONFIRMAÇÃO -->
   <div id="custom-modal" class="modal-overlay" style="display: none;">
     <div class="modal-card">
       <h3 id="modal-title">Confirmação</h3>
@@ -36,6 +37,20 @@
     </div>
   </div>
 
+  <!-- MODAL DE PRÉ-VISUALIZAÇÃO DE COMPROVATIVOS (LIGHTBOX) -->
+  <div id="receipt-modal" class="modal-overlay" style="display: none; z-index: 100000;">
+    <div class="modal-card" style="max-width: 800px; width: 90%; max-height: 90vh; display: flex; flex-direction: column;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h3>Comprovativo da Operação</h3>
+        <button type="button" class="btn-secondary" onclick="closeReceiptModal()" style="padding: 5px 12px;">✕ Fechar</button>
+      </div>
+      <div id="receipt-preview-body" style="flex: 1; overflow: auto; text-align: center; display: flex; justify-content: center; align-items: center; min-height: 300px; background: rgba(0,0,0,0.2); border-radius: 8px; padding: 10px;">
+        <!-- Imagem ou iframe é injetado aqui -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL SÉRIE RECORRENTE -->
   <div id="series-modal" class="modal-overlay" style="display: none;">
     <div class="modal-card series-modal-card">
       <h3>Editar Série Recorrente</h3>
@@ -52,9 +67,8 @@
   </div>
 
   <!-- LANDING PAGE PROFISSIONAL -->
-  <div id="landing-screen" style="display: block; width: 100%; min-height: 100vh; background: var(--bg-primary); overflow-y: auto; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 99999;">
+  <div id="landing-screen" style="display: block; width: 100%; min-height: 100vh; background: var(--bg-primary); overflow-y: auto; position: absolute; top: 0; left: 0; z-index: 9999;">
     
-    <!-- NAVBAR SUPERIOR -->
     <nav style="width: 100%; max-width: 1200px; display: flex; justify-content: space-between; align-items: center; padding: 24px 20px; margin: 0 auto; position: fixed; top: 0; left: 0; right: 0; background: rgba(9, 7, 15, 0.95); backdrop-filter: blur(16px); z-index: 1000; border-bottom: 1px solid var(--border-color);">
       <div class="brand-logo" style="margin-bottom: 0; font-size: 24px;">⚡ FluxoPro <span style="font-size: 12px; color: var(--accent-purple); font-weight: 500;">ENTERPRISE</span></div>
       <div style="display: flex; gap: 12px;">
@@ -63,7 +77,6 @@
       </div>
     </nav>
 
-    <!-- HERO SECTION -->
     <div style="text-align: center; max-width: 900px; margin: 180px auto 80px; padding: 0 20px;">
       <span class="tag-chip" style="margin-bottom: 20px; font-size: 12px; padding: 6px 18px; letter-spacing: 1px;">PLATAFORMA FINANCEIRA DE ALTO PADRÃO</span>
       <h1 style="font-size: 48px; font-weight: 800; line-height: 1.15; margin-bottom: 24px; color: var(--text-main); letter-spacing: -1px;">
@@ -74,7 +87,6 @@
       </p>
     </div>
 
-    <!-- RECURSOS PRINCIPAIS -->
     <div style="width: 100%; max-width: 1200px; padding: 0 20px; margin: 0 auto 100px;">
       <div style="text-align: center; margin-bottom: 50px;">
         <h2 style="font-size: 30px; font-weight: 800; color: var(--text-main); margin-bottom: 12px;">Tecnologia de Ponta</h2>
@@ -99,7 +111,6 @@
       </div>
     </div>
 
-    <!-- SEGURANÇA -->
     <div style="width: 100%; background: rgba(20, 14, 36, 0.5); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 80px 20px; margin-bottom: 80px;">
       <div style="max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; align-items: center;">
         <div>
@@ -120,13 +131,11 @@
       </div>
     </div>
 
-    <!-- FAQ -->
     <div style="width: 100%; max-width: 900px; padding: 0 20px; margin: 0 auto 100px;">
       <div style="text-align: center; margin-bottom: 50px;">
         <h2 style="font-size: 30px; font-weight: 800; color: var(--text-main); margin-bottom: 12px;">Perguntas Frequentes</h2>
         <p style="color: var(--text-muted); font-size: 15px;">Tire as suas dúvidas sobre o funcionamento da plataforma.</p>
       </div>
-      
       <div style="display: flex; flex-direction: column; gap: 16px;">
         <div class="card" style="padding: 24px;">
           <h4 style="font-size: 16px; color: var(--text-main); font-weight: 700; margin-bottom: 8px;">O Open Finance é seguro?</h4>
@@ -136,14 +145,9 @@
           <h4 style="font-size: 16px; color: var(--text-main); font-weight: 700; margin-bottom: 8px;">Posso usar tanto para uso pessoal quanto empresarial?</h4>
           <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">Com certeza. No momento do registo pode selecionar o seu perfil (Singular ou Empresa), adaptando os relatórios e categorias à sua realidade.</p>
         </div>
-        <div class="card" style="padding: 24px;">
-          <h4 style="font-size: 16px; color: var(--text-main); font-weight: 700; margin-bottom: 8px;">Como funcionam os relatórios em PDF e Excel?</h4>
-          <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">Com um único clique na aba do painel, pode exportar todo o seu histórico filtrado por período diretamente para ficheiros Excel ou PDF formatados.</p>
-        </div>
       </div>
     </div>
 
-    <!-- RODAPÉ CORPORATIVO -->
     <footer style="width: 100%; background: #05030a; border-top: 1px solid var(--border-color); padding: 50px 20px; text-align: center;">
       <div style="max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; align-items: center;">
         <div class="brand-logo" style="margin-bottom: 0; font-size: 22px;">⚡ FluxoPro Enterprise</div>
@@ -153,7 +157,6 @@
         </div>
       </div>
     </footer>
-
   </div>
 
   <!-- ECRÃ DE AUTENTICAÇÃO -->
@@ -299,7 +302,7 @@
         <header class="header-bar">
           <div>
             <h1>Painel Financeiro</h1>
-            <p class="subtitle">Bem-vindo(a), <strong id="user-display-name">Utilizador</strong></p>
+            <p class="subtitle">Bem-vindo(a), <strong id="user-display-name">Utilizador</strong> <small style="opacity: 0.6;">(Dica: Pressione <code>N</code> p/ novo lançamento, <code>Ctrl+K</code> p/ pesquisar)</small></p>
           </div>
           <div class="month-filter-box">
             <button onclick="toggleStealthMode()" class="btn-secondary" id="btn-stealth" title="Ocultar/Mostrar Valores">👁️ Modo Privado</button>
@@ -332,6 +335,26 @@
           <div class="card saldo">
             <h3>Balanço Geral</h3>
             <div class="value" id="val-saldo">R$ 0,00</div>
+          </div>
+        </section>
+
+        <!-- NOVO: PROJEÇÃO PREDITIVA DE FLUXO DE CAIXA -->
+        <section class="panel-card" style="margin-bottom: 24px;">
+          <h2>🔮 Projeção de Fluxo de Caixa Futuro (Saldo Estimado)</h2>
+          <p class="subtitle" style="margin-bottom: 16px;">Estimativa automática com base nas suas contas agendadas e recorrências.</p>
+          <div class="simulator-results-grid">
+            <div class="simulator-result-card">
+              <span>Próximos 30 Dias</span>
+              <h4 id="forecast-30d" style="color: #a855f7;">R$ 0,00</h4>
+            </div>
+            <div class="simulator-result-card">
+              <span>Próximos 60 Dias</span>
+              <h4 id="forecast-60d" style="color: #3b82f6;">R$ 0,00</h4>
+            </div>
+            <div class="simulator-result-card">
+              <span>Próximos 90 Dias</span>
+              <h4 id="forecast-90d" style="color: #10b981;">R$ 0,00</h4>
+            </div>
           </div>
         </section>
 
@@ -381,7 +404,7 @@
           </div>
         </section>
 
-        <section class="panel-card">
+        <section class="panel-card" id="section-new-trans-card">
           <h2 id="form-title">Novo Lançamento Financeiro</h2>
           
           <div style="margin-bottom: 15px; padding: 12px; background: rgba(168, 85, 247, 0.05); border-radius: 12px; border: 1px dashed var(--border-color);">
@@ -481,12 +504,12 @@
             <h2>Histórico de Operações</h2>
             <div class="export-actions">
               <button class="btn-export" id="btn-export">📥 Exportar CSV</button>
-              <button class="btn-export btn-pdf" id="btn-print-pdf">📄 Gerar PDF</button>
+              <button class="btn-export btn-pdf" id="btn-print-pdf">📄 Gerar PDF Executivo</button>
               <button class="btn-export" id="btn-export-excel" onclick="exportarExcel()" style="background: #10b981; color: white; border: none;">📊 Exportar Excel</button>
             </div>
           </div>
           <div class="table-controls">
-            <input type="text" id="search-input" placeholder="🔍 Pesquisar por descrição ou etiqueta...">
+            <input type="text" id="search-input" placeholder="🔍 Pesquisar por descrição ou etiqueta... (Ctrl + K)">
             <select id="filter-type">
               <option value="Todos">Todos os Tipos</option>
               <option value="Receita">Apenas Entradas</option>
@@ -826,26 +849,43 @@
         </section>
       </div>
 
+      <!-- NOVO: CENTRAL DE SUPORTE VIP TOTALMENTE CONECTADA -->
       <div id="section-support" class="page-section" style="display: none;">
         <header class="header-bar">
           <div>
-            <h1>Central de Atendimento & Suporte</h1>
-            <p class="subtitle">Precisa de ajuda? A nossa equipa está ao dispor</p>
+            <h1>Central de Atendimento & Suporte VIP</h1>
+            <p class="subtitle">Precisa de ajuda? A nossa equipa de especialistas está ao dispor</p>
           </div>
         </header>
 
         <div class="cards-grid">
-          <div class="card">
-            <h3>💬 Canal de WhatsApp</h3>
-            <p style="color: var(--text-muted); font-size: 14px; margin: 10px 0;">Atendimento rápido em horário comercial.</p>
-            <a href="https://wa.me/5511999999999" target="_blank" class="btn-primary" style="display: inline-block; text-align: center; text-decoration: none;">Ligar ao WhatsApp</a>
+          <div class="card" style="padding: 30px; text-align: center;">
+            <div style="font-size: 36px; margin-bottom: 12px;">💬</div>
+            <h3 style="margin-bottom: 8px;">Atendimento via WhatsApp</h3>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">Tire dúvidas rápidas diretamente com o nosso suporte técnico.</p>
+            <a href="https://wa.me/5511999999999?text=Olá!%20Preciso%20de%20ajuda%20no%20FluxoPro." target="_blank" class="btn-primary" style="display: inline-block; text-align: center; text-decoration: none; background: #25d366; color: #fff; font-weight: 600;">Conversar no WhatsApp</a>
           </div>
-          <div class="card">
-            <h3>✉️ E-mail de Suporte</h3>
-            <p style="color: var(--text-muted); font-size: 14px; margin: 10px 0;">Envie a sua dúvida ou sugestão diretamente.</p>
-            <a href="mailto:suporte@fluxopro.com" class="btn-primary" style="display: inline-block; text-align: center; text-decoration: none; background: #475569;">Enviar E-mail</a>
+
+          <div class="card" style="padding: 30px; text-align: center;">
+            <div style="font-size: 36px; margin-bottom: 12px;">✉️</div>
+            <h3 style="margin-bottom: 8px;">Suporte por E-mail</h3>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">Envie relatórios, dúvidas detalhadas ou sugestões para a nossa equipa.</p>
+            <a href="mailto:suporte@fluxopro.com?subject=Suporte%20FluxoPro%20-%20Dúvida&body=Olá,%20preciso%20de%20suporte..." class="btn-primary" style="display: inline-block; text-align: center; text-decoration: none; background: #475569; color: #fff; font-weight: 600;">Enviar E-mail</a>
           </div>
         </div>
+
+        <section class="panel-card" style="margin-top: 30px;">
+          <h2>📩 Enviar Mensagem Direta</h2>
+          <p class="subtitle" style="margin-bottom: 16px;">Preencha o formulário abaixo para abrir um pedido de suporte prioritário.</p>
+          <form id="form-support-msg" onsubmit="enviarMensagemSuporte(event)">
+            <div class="form-grid">
+              <input type="text" id="sup-name" placeholder="O seu nome" required>
+              <input type="email" id="sup-email" placeholder="O seu e-mail de contacto" required>
+              <textarea id="sup-message" placeholder="Escreva a sua mensagem ou dúvida aqui..." rows="4" style="grid-column: span 2; background: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--text-main); padding: 12px; border-radius: 8px; font-family: inherit; resize: vertical;" required></textarea>
+            </div>
+            <button type="submit" class="btn-add" style="margin-top: 15px;">Enviar Mensagem ao Suporte</button>
+          </form>
+        </section>
       </div>
 
     </main>
