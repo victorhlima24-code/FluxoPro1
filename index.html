@@ -156,7 +156,7 @@
 
   </div>
 
-  <!-- ECRÃ DE AUTENTICAÇÃO (OCULTO POR PADRÃO) -->
+  <!-- ECRÃ DE AUTENTICAÇÃO -->
   <div id="auth-screen" class="auth-wrapper" style="display: none;">
     <div class="auth-box" id="login-box">
       <div class="brand-logo">⚡ FluxoPro</div>
@@ -850,6 +850,17 @@
 
     </main>
   </div>
+
+  <script>
+    // Se o Supabase detetar que o utilizador já está logado, oculta a landing page e o ecrân de auth
+    window.addEventListener('DOMContentLoaded', async () => {
+      const { data: { session } } = await _supabase.auth.getSession();
+      if (session && session.user) {
+        document.getElementById('landing-screen').style.display = 'none';
+        document.getElementById('auth-screen').style.display = 'none';
+      }
+    });
+  </script>
 
 </body>
 </html>
