@@ -51,11 +51,11 @@
     </div>
   </div>
 
-  <!-- LANDING PAGE PROFISSIONAL (INTRODUÇÃO) -->
-  <div id="landing-screen" class="auth-wrapper" style="flex-direction: column; justify-content: flex-start; padding: 0; overflow-y: auto; background: var(--bg-primary);">
+  <!-- LANDING PAGE PROFISSIONAL (SEM CAIXA DE LOGIN INICIAL) -->
+  <div id="landing-screen" style="display: flex; flex-direction: column; justify-content: flex-start; min-height: 100vh; padding: 0; overflow-y: auto; background: var(--bg-primary);">
     
     <!-- NAVBAR SUPERIOR -->
-    <nav style="width: 100%; max-width: 1200px; display: flex; justify-content: space-between; align-items: center; padding: 24px 20px; margin: 0 auto; position: fixed; top: 0; background: rgba(9, 7, 15, 0.85); backdrop-filter: blur(16px); z-index: 1000; border-bottom: 1px solid var(--border-color);">
+    <nav style="width: 100%; max-width: 1200px; display: flex; justify-content: space-between; align-items: center; padding: 24px 20px; margin: 0 auto; position: fixed; top: 0; left: 0; right: 0; background: rgba(9, 7, 15, 0.85); backdrop-filter: blur(16px); z-index: 1000; border-bottom: 1px solid var(--border-color);">
       <div class="brand-logo" style="margin-bottom: 0; font-size: 24px;">⚡ FluxoPro <span style="font-size: 12px; color: var(--accent-purple); font-weight: 500;">ENTERPRISE</span></div>
       <div style="display: flex; gap: 12px;">
         <button type="button" class="btn-secondary" style="padding: 10px 22px; font-size: 13px;" onclick="document.getElementById('landing-screen').style.display='none'; document.getElementById('auth-screen').style.display='flex'; document.getElementById('login-box').style.display='block'; document.getElementById('register-box').style.display='none';">Entrar</button>
@@ -72,14 +72,10 @@
       <p style="font-size: 18px; color: var(--text-muted); line-height: 1.6; margin-bottom: 36px; max-width: 750px; margin-left: auto; margin-right: auto;">
         Sincronize as suas contas bancárias automaticamente via Open Finance (Pluggy), processe recibos com Inteligência Artificial e antecipe decisões com relatórios de nível corporativo.
       </p>
-      <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
-        <button type="button" class="btn-primary" style="width: auto; padding: 16px 36px; font-size: 15px;" onclick="document.getElementById('landing-screen').style.display='none'; document.getElementById('auth-screen').style.display='flex'; document.getElementById('register-box').style.display='block'; document.getElementById('login-box').style.display='none';">Começar Gratuitamente</button>
-        <button type="button" class="btn-secondary" style="padding: 16px 36px; font-size: 15px;" onclick="document.getElementById('landing-screen').style.display='none'; document.getElementById('auth-screen').style.display='flex'; document.getElementById('login-box').style.display='block'; document.getElementById('register-box').style.display='none';">Aceder ao Sistema</button>
-      </div>
     </div>
 
-    <!-- SEÇÃO DE RECURSOS PRINCIPAIS -->
-    <div style="width: 100%; max-width: 1200px; padding: 0 20px; margin-bottom: 100px;">
+    <!-- RECURSOS PRINCIPAIS -->
+    <div style="width: 100%; max-width: 1200px; padding: 0 20px; margin: 0 auto 100px;">
       <div style="text-align: center; margin-bottom: 50px;">
         <h2 style="font-size: 30px; font-weight: 800; color: var(--text-main); margin-bottom: 12px;">Tecnologia de Ponta</h2>
         <p style="color: var(--text-muted); font-size: 15px;">Tudo o que precisa para gerir finanças com precisão absoluta.</p>
@@ -103,7 +99,7 @@
       </div>
     </div>
 
-    <!-- SEÇÃO DE SEGURANÇA E CONFIANÇA -->
+    <!-- SEGURANÇA -->
     <div style="width: 100%; background: rgba(20, 14, 36, 0.5); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 80px 20px; margin-bottom: 80px;">
       <div style="max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; align-items: center;">
         <div>
@@ -124,8 +120,8 @@
       </div>
     </div>
 
-    <!-- SEÇÃO DE PERGUNTAS FREQUENTES (FAQ) -->
-    <div style="width: 100%; max-width: 900px; padding: 0 20px; margin-bottom: 100px;">
+    <!-- FAQ -->
+    <div style="width: 100%; max-width: 900px; padding: 0 20px; margin: 0 auto 100px;">
       <div style="text-align: center; margin-bottom: 50px;">
         <h2 style="font-size: 30px; font-weight: 800; color: var(--text-main); margin-bottom: 12px;">Perguntas Frequentes</h2>
         <p style="color: var(--text-muted); font-size: 15px;">Tire as suas dúvidas sobre o funcionamento da plataforma.</p>
@@ -160,7 +156,7 @@
 
   </div>
 
-  <!-- ECRÃS DE AUTENTICAÇÃO (LOGIN / REGISTO) -->
+  <!-- CAIXAS DE AUTENTICAÇÃO (OCULTAS POR PADRÃO) -->
   <div id="auth-screen" class="auth-wrapper" style="display: none;">
     <div class="auth-box" id="login-box">
       <div class="brand-logo">⚡ FluxoPro</div>
