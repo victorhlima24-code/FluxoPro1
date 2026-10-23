@@ -45,7 +45,6 @@
         <button type="button" class="btn-secondary" onclick="closeReceiptModal()" style="padding: 5px 12px;">✕ Fechar</button>
       </div>
       <div id="receipt-preview-body" style="flex: 1; overflow: auto; text-align: center; display: flex; justify-content: center; align-items: center; min-height: 300px; background: rgba(0,0,0,0.2); border-radius: 8px; padding: 10px;">
-        <!-- Imagem ou iframe é injetado aqui -->
       </div>
     </div>
   </div>
@@ -54,7 +53,7 @@
   <div id="series-modal" class="modal-overlay" style="display: none;">
     <div class="modal-card series-modal-card">
       <h3>Editar Série Recorrente</h3>
-      <p>Isto altera todos os lançamentos recorrentes futuros com a mesma descrição, categoria e tipo — os já ocorridos no passado não são alterados.</p>
+      <p>Isto altera todos os lançamentos recorrentes futuros com a mesma descrição, categoria e tipo.</p>
       <div class="form-grid">
         <input type="text" id="series-new-desc" placeholder="Nova descrição">
         <input type="number" step="0.01" id="series-new-val" placeholder="Novo valor (R$)">
@@ -66,9 +65,8 @@
     </div>
   </div>
 
-  <!-- LANDING PAGE PROFISSIONAL -->
+  <!-- LANDING PAGE -->
   <div id="landing-screen" style="display: block; width: 100%; min-height: 100vh; background: var(--bg-primary); overflow-y: auto; position: absolute; top: 0; left: 0; z-index: 9999;">
-    
     <nav style="width: 100%; max-width: 1200px; display: flex; justify-content: space-between; align-items: center; padding: 24px 20px; margin: 0 auto; position: fixed; top: 0; left: 0; right: 0; background: rgba(9, 7, 15, 0.95); backdrop-filter: blur(16px); z-index: 1000; border-bottom: 1px solid var(--border-color);">
       <div class="brand-logo" style="margin-bottom: 0; font-size: 24px;">⚡ FluxoPro <span style="font-size: 12px; color: var(--accent-purple); font-weight: 500;">ENTERPRISE</span></div>
       <div style="display: flex; gap: 12px;">
@@ -85,67 +83,6 @@
       <p style="font-size: 18px; color: var(--text-muted); line-height: 1.6; margin-bottom: 36px; max-width: 750px; margin-left: auto; margin-right: auto;">
         Sincronize as suas contas bancárias automaticamente via Open Finance (Pluggy), processe recibos com Inteligência Artificial e antecipe decisões com relatórios de nível corporativo.
       </p>
-    </div>
-
-    <div style="width: 100%; max-width: 1200px; padding: 0 20px; margin: 0 auto 100px;">
-      <div style="text-align: center; margin-bottom: 50px;">
-        <h2 style="font-size: 30px; font-weight: 800; color: var(--text-main); margin-bottom: 12px;">Tecnologia de Ponta</h2>
-        <p style="color: var(--text-muted); font-size: 15px;">Tudo o que precisa para gerir finanças com precisão absoluta.</p>
-      </div>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
-        <div class="card" style="padding: 36px;">
-          <div style="font-size: 32px; margin-bottom: 16px;">🏦</div>
-          <h3 style="color: var(--text-main); font-size: 18px; margin-bottom: 10px;">Open Finance Automático</h3>
-          <p style="color: var(--text-muted); font-size: 14px; line-height: 1.6;">Conecte qualquer instituição financeira de forma segura via Pluggy. Os seus extratos e transações atualizam sozinhos.</p>
-        </div>
-        <div class="card" style="padding: 36px;">
-          <div style="font-size: 32px; margin-bottom: 16px;">🤖</div>
-          <h3 style="color: var(--text-main); font-size: 18px; margin-bottom: 10px;">Leitura de Faturas por IA</h3>
-          <p style="color: var(--text-muted); font-size: 14px; line-height: 1.6;">Fotografe recibos ou extratos em PDF: a nossa IA lê e preenche os campos do lançamento instantaneamente para si.</p>
-        </div>
-        <div class="card" style="padding: 36px;">
-          <div style="font-size: 32px; margin-bottom: 16px;">📈</div>
-          <h3 style="color: var(--text-main); font-size: 18px; margin-bottom: 10px;">Simulador & Orçamento 50/30/20</h3>
-          <p style="color: var(--text-muted); font-size: 14px; line-height: 1.6;">Projete o seu património a longo prazo com juros compostos e organize os envelopes de gastos do seu mês com facilidade.</p>
-        </div>
-      </div>
-    </div>
-
-    <div style="width: 100%; background: rgba(20, 14, 36, 0.5); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 80px 20px; margin-bottom: 80px;">
-      <div style="max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; align-items: center;">
-        <div>
-          <span class="tag-chip" style="margin-bottom: 14px;">SEGURANÇA CORPORATIVA</span>
-          <h2 style="font-size: 32px; font-weight: 800; color: var(--text-main); margin-bottom: 16px; line-height: 1.2;">Os seus dados blindados com padrão bancário.</h2>
-          <p style="color: var(--text-muted); font-size: 15px; line-height: 1.6;">Utilizamos encriptação de ponta a ponta, infraestrutura robusta em nuvem (Supabase) e autenticação em duas etapas (2FA) para garantir que apenas você acede às suas informações.</p>
-        </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-          <div class="card" style="text-align: center; padding: 24px;">
-            <h4 style="font-size: 28px; color: var(--accent-purple); font-weight: 800;">256-bit</h4>
-            <span style="font-size: 12px; color: var(--text-muted);">Encriptação Avançada</span>
-          </div>
-          <div class="card" style="text-align: center; padding: 24px;">
-            <h4 style="font-size: 28px; color: #10b981; font-weight: 800;">100%</h4>
-            <span style="font-size: 12px; color: var(--text-muted);">Conforme Open Finance</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div style="width: 100%; max-width: 900px; padding: 0 20px; margin: 0 auto 100px;">
-      <div style="text-align: center; margin-bottom: 50px;">
-        <h2 style="font-size: 30px; font-weight: 800; color: var(--text-main); margin-bottom: 12px;">Perguntas Frequentes</h2>
-        <p style="color: var(--text-muted); font-size: 15px;">Tire as suas dúvidas sobre o funcionamento da plataforma.</p>
-      </div>
-      <div style="display: flex; flex-direction: column; gap: 16px;">
-        <div class="card" style="padding: 24px;">
-          <h4 style="font-size: 16px; color: var(--text-main); font-weight: 700; margin-bottom: 8px;">O Open Finance é seguro?</h4>
-          <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">Sim! O Open Finance é regulamentado e utiliza protocolos oficiais de segurança. O FluxoPro apenas lê as suas informações autorizadas, sem nunca ter acesso às suas senhas transacionais.</p>
-        </div>
-        <div class="card" style="padding: 24px;">
-          <h4 style="font-size: 16px; color: var(--text-main); font-weight: 700; margin-bottom: 8px;">Posso usar tanto para uso pessoal quanto empresarial?</h4>
-          <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">Com certeza. No momento do registo pode selecionar o seu perfil (Singular ou Empresa), adaptando os relatórios e categorias à sua realidade.</p>
-        </div>
-      </div>
     </div>
 
     <footer style="width: 100%; background: #05030a; border-top: 1px solid var(--border-color); padding: 50px 20px; text-align: center;">
@@ -281,6 +218,9 @@
         <nav class="sidebar-nav">
           <a href="#" class="nav-item active" id="nav-dash">Painel</a>
           <a href="#" class="nav-item" id="nav-bills">Contas a Pagar</a>
+          <a href="#" class="nav-item" id="nav-cards">Cartões de Crédito</a>
+          <a href="#" class="nav-item" id="nav-subscriptions">Assinaturas (SaaS)</a>
+          <a href="#" class="nav-item" id="nav-split">Divisão de Gastos</a>
           <a href="#" class="nav-item" id="nav-categories">Categorias</a>
           <a href="#" class="nav-item" id="nav-goals">Planeamento</a>
           <a href="#" class="nav-item" id="nav-investments">Investimentos</a>
@@ -298,6 +238,7 @@
 
     <main class="main-content">
       
+      <!-- PAINEL PRINCIPAL -->
       <div id="section-dashboard" class="page-section">
         <header class="header-bar">
           <div>
@@ -305,6 +246,7 @@
             <p class="subtitle">Bem-vindo(a), <strong id="user-display-name">Utilizador</strong> <small style="opacity: 0.6;">(Dica: Pressione <code>N</code> p/ novo lançamento, <code>Ctrl+K</code> p/ pesquisar)</small></p>
           </div>
           <div class="month-filter-box">
+            <button onclick="requestPushNotificationPermission()" class="btn-secondary" id="btn-push-notify" title="Ativar Notificações no Dispositivo">🔔 Notificações Push</button>
             <button onclick="toggleStealthMode()" class="btn-secondary" id="btn-stealth" title="Ocultar/Mostrar Valores">👁️ Modo Privado</button>
             <button onclick="sincronizarContaBancaria()" class="btn-primary" style="background: #a855f7; font-size: 0.85rem; padding: 8px 12px;" id="btn-open-finance">🏦 Ligar Banco (Open Finance)</button>
             
@@ -338,7 +280,6 @@
           </div>
         </section>
 
-        <!-- NOVO: PROJEÇÃO PREDITIVA DE FLUXO DE CAIXA -->
         <section class="panel-card" style="margin-bottom: 24px;">
           <h2>🔮 Projeção de Fluxo de Caixa Futuro (Saldo Estimado)</h2>
           <p class="subtitle" style="margin-bottom: 16px;">Estimativa automática com base nas suas contas agendadas e recorrências.</p>
@@ -375,35 +316,6 @@
           </div>
         </section>
 
-        <section class="panel-card">
-          <h2>⚡ Calculadora Automática de Orçamento (50 / 30 / 20)</h2>
-          <p class="subtitle" style="margin-bottom: 16px;">Insira a sua receita mensal prevista e calcule automaticamente a distribuição ideal do seu dinheiro.</p>
-          <div class="form-grid">
-            <input type="number" id="calc-income-input" placeholder="Rendimento Mensal Total (R$)" step="0.01">
-            <button type="button" class="btn-add" onclick="calcularOrcamentoAutomatico()">Calcular Distribuição</button>
-            <button type="button" class="btn-secondary" onclick="aplicarCalculoAosEnvelopes()" style="height: 100%;">Aplicar aos Envelopes</button>
-          </div>
-          <div id="calc-result-box" class="goal-planning-box" style="display: none; margin-top: 16px;">
-            <div class="cards-grid" style="margin-bottom: 0;">
-              <div class="card">
-                <h3>Essenciais (50%)</h3>
-                <div class="value" id="res-essentials" style="font-size: 22px; color: #a855f7;">R$ 0,00</div>
-                <small style="color: var(--text-muted); font-size: 11px;">Habitação, Alimentação, Contas</small>
-              </div>
-              <div class="card">
-                <h3>Lazer / Estilo (30%)</h3>
-                <div class="value" id="res-lifestyle" style="font-size: 22px; color: #f59e0b;">R$ 0,00</div>
-                <small style="color: var(--text-muted); font-size: 11px;">Restaurantes, Compras, Lazer</small>
-              </div>
-              <div class="card">
-                <h3>Poupança / Metas (20%)</h3>
-                <div class="value" id="res-savings" style="font-size: 22px; color: #10b981;">R$ 0,00</div>
-                <small style="color: var(--text-muted); font-size: 11px;">Investimentos, Fundo de Emergência</small>
-              </div>
-            </div>
-          </div>
-        </section>
-
         <section class="panel-card" id="section-new-trans-card">
           <h2 id="form-title">Novo Lançamento Financeiro</h2>
           
@@ -411,7 +323,6 @@
             <p id="status-ocr" style="color: var(--accent-purple); font-weight: bold; margin-bottom: 5px; font-size: 14px;"></p>
             <label for="leitor-nota" style="display:block; margin-bottom:5px; font-size: 14px; font-weight:600;">📷 Ler Fatura/Recibo (IA):</label>
             <input type="file" id="leitor-nota" accept="image/*" onchange="lerNotaFiscalViaIA(this.files[0])" style="font-size: 12px;">
-            <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Funciona com fotografias (JPG/PNG). Requer a Edge Function <code>ai-assistant</code> publicada.</p>
           </div>
 
           <form id="form-transaction">
@@ -447,16 +358,6 @@
               </label>
             </div>
 
-            <div class="roundup-box">
-              <label class="checkbox-label" style="margin: 0;">
-                <input type="checkbox" id="trans-roundup"> 🐷 Arredondar e guardar a diferença no mealheiro
-              </label>
-              <select id="roundup-goal-select" disabled>
-                <option value="">Escolha a meta...</option>
-              </select>
-              <span id="roundup-preview" style="color: var(--text-muted);"></span>
-            </div>
-
             <button type="submit" class="btn-add">Confirmar Lançamento</button>
           </form>
         </section>
@@ -470,33 +371,6 @@
             <h2>Análise por Categoria</h2>
             <canvas id="doughnutChart"></canvas>
           </div>
-        </section>
-        
-        <section class="panel-card">
-          <h2>📊 Gastos por Dia da Semana</h2>
-          <canvas id="graficoSemanal"></canvas>
-        </section>
-
-        <section class="panel-card">
-          <h2>📊 Comparativo: Mês Atual vs Mês Anterior</h2>
-          <canvas id="compareChart"></canvas>
-        </section>
-
-        <section class="panel-card">
-          <h2>📆 Visão Anual (últimos 12 meses)</h2>
-          <canvas id="annualChart"></canvas>
-        </section>
-
-        <section class="panel-card">
-          <h2>📥 Importar Extrato Bancário</h2>
-          <p class="subtitle" style="margin-bottom: 14px;">Envie um ficheiro CSV (data, descrição, valor) ou OFX exportado do seu banco.</p>
-          <div class="form-grid" style="align-items:center;">
-            <input type="file" id="import-file-input" accept=".csv,.ofx">
-            <select id="import-default-account"></select>
-            <select id="import-default-cat"></select>
-            <button type="button" class="btn-add" id="btn-import-file">Importar Ficheiro</button>
-          </div>
-          <div id="import-preview-container"></div>
         </section>
 
         <section class="panel-card">
@@ -515,11 +389,6 @@
               <option value="Receita">Apenas Entradas</option>
               <option value="Despesa">Apenas Saídas</option>
             </select>
-            <div class="date-range-filter">
-              <input type="date" id="filter-date-start" title="Data Inicial">
-              <span>até</span>
-              <input type="date" id="filter-date-end" title="Data Final">
-            </div>
           </div>
 
           <div class="table-responsive">
@@ -540,6 +409,115 @@
         </section>
       </div>
 
+      <!-- CARTÕES DE CRÉDITO -->
+      <div id="section-cards" class="page-section" style="display: none;">
+        <header class="header-bar">
+          <div>
+            <h1>💳 Gestão de Cartões de Crédito</h1>
+            <p class="subtitle">Controle de faturas, limite disponível e datas de vencimento</p>
+          </div>
+        </header>
+
+        <section class="panel-card">
+          <h2>Adicionar Novo Cartão</h2>
+          <form id="form-add-card" onsubmit="handleSaveCard(event)">
+            <div class="form-grid">
+              <input type="text" id="card-name" placeholder="Nome do Cartão (ex: Nubank, Visa Black)" required>
+              <input type="number" step="0.01" id="card-limit" placeholder="Limite Total (R$)" required>
+              <input type="number" id="card-close-day" placeholder="Dia de Fecho (1-31)" min="1" max="31" required>
+              <input type="number" id="card-due-day" placeholder="Dia de Vencimento (1-31)" min="1" max="31" required>
+            </div>
+            <button type="submit" class="btn-add">Adicionar Cartão</button>
+          </form>
+        </section>
+
+        <section class="panel-card">
+          <h2>Os Seus Cartões e Faturas</h2>
+          <div id="cards-list-container" class="cards-grid"></div>
+        </section>
+      </div>
+
+      <!-- GESTÃO DE ASSINATURAS (SAAS TRACKER) -->
+      <div id="section-subscriptions" class="page-section" style="display: none;">
+        <header class="header-bar">
+          <div>
+            <h1>📦 Gestão de Assinaturas & Contratos</h1>
+            <p class="subtitle">Monitorize gastos mensais fixos com serviços de streaming e licenças</p>
+          </div>
+        </header>
+
+        <section class="cards-grid">
+          <div class="card">
+            <h3>Custo Total Mensal de Assinaturas</h3>
+            <div class="value" id="val-total-subscriptions" style="color: #a855f7;">R$ 0,00</div>
+          </div>
+        </section>
+
+        <section class="panel-card">
+          <h2>Nova Assinatura</h2>
+          <form id="form-subscription" onsubmit="handleSaveSubscription(event)">
+            <div class="form-grid">
+              <input type="text" id="sub-name" placeholder="Serviço (ex: Netflix, Spotify, Adobe)" required>
+              <input type="number" step="0.01" id="sub-price" placeholder="Valor Mensal (R$)" required>
+              <input type="number" id="sub-charge-day" placeholder="Dia do Mês da Cobrança (1-31)" min="1" max="31" required>
+              <select id="sub-category">
+                <option value="Lazer">Lazer / Entretenimento</option>
+                <option value="Trabalho">Trabalho / Software</option>
+                <option value="Utilitários">Utilitários / Casa</option>
+              </select>
+            </div>
+            <button type="submit" class="btn-add">Registar Assinatura</button>
+          </form>
+        </section>
+
+        <section class="panel-card">
+          <h2>Assinaturas Ativas</h2>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Serviço</th>
+                  <th>Categoria</th>
+                  <th>Dia de Cobrança</th>
+                  <th>Valor Mensal</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="subscriptions-table-body"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <!-- DIVISÃO DE GASTOS (SPLITWISE) -->
+      <div id="section-split" class="page-section" style="display: none;">
+        <header class="header-bar">
+          <div>
+            <h1>🤝 Divisão de Gastos & Grupos</h1>
+            <p class="subtitle">Divida despesas de viagens, casa ou eventos com amigos e parceiros</p>
+          </div>
+        </header>
+
+        <section class="panel-card">
+          <h2>Adicionar Despesa Partilhada</h2>
+          <form id="form-split-expense" onsubmit="handleSaveSplitExpense(event)">
+            <div class="form-grid">
+              <input type="text" id="split-desc" placeholder="Descrição (ex: Jantar de Grupo)" required>
+              <input type="number" step="0.01" id="split-amount" placeholder="Valor Total (R$)" required>
+              <input type="text" id="split-payer" placeholder="Quem pagou? (ex: Eu, Maria)" required>
+              <input type="text" id="split-participants" placeholder="Participantes separados por vírgula (ex: Eu, Maria, João)" required>
+            </div>
+            <button type="submit" class="btn-add">Calcular e Registar Divisão</button>
+          </form>
+        </section>
+
+        <section class="panel-card">
+          <h2>Balanço de Quem Deve a Quem</h2>
+          <div id="split-balance-container" class="goal-planning-box">Nenhuma despesa partilhada registada.</div>
+        </section>
+      </div>
+
+      <!-- CONTAS A PAGAR -->
       <div id="section-bills" class="page-section" style="display: none;">
         <header class="header-bar">
           <div>
@@ -556,11 +534,6 @@
               <input type="number" step="0.01" id="bill-val" placeholder="Valor (R$)" required>
               <input type="date" id="bill-duedate" required>
               <select id="bill-account"></select>
-            </div>
-            <div class="form-options">
-              <label class="checkbox-label">
-                <input type="checkbox" id="bill-recurring"> 🔄 Conta recorrente (repete todo o mês)
-              </label>
             </div>
             <button type="submit" class="btn-add">Agendar Conta</button>
           </form>
@@ -585,6 +558,7 @@
         </section>
       </div>
 
+      <!-- CATEGORIAS -->
       <div id="section-categories" class="page-section" style="display: none;">
         <header class="header-bar">
           <div>
@@ -597,59 +571,53 @@
           <h2>Adicionar Nova Categoria</h2>
           <form id="form-add-category">
             <div class="form-grid">
-              <input type="text" id="cat-name-input" placeholder="Nome da Categoria (Ex: Animal de Estimação, Saúde)" required>
-              <input type="number" step="0.01" id="cat-limit-input" placeholder="Meta de Gastos R$ (Opcional)">
+              <input type="text" id="cat-name-input" placeholder="Nome da Categoria" required>
+              <input type="number" step="0.01" id="cat-limit-input" placeholder="Meta de Gastos R$">
               <button type="submit" class="btn-add">Criar Categoria</button>
             </div>
           </form>
         </section>
 
         <section class="panel-card">
-          <h2>As Suas Categorias & Teto de Gastos (Envelopes)</h2>
+          <h2>As Suas Categorias</h2>
           <div id="categories-list-container" class="cards-grid"></div>
         </section>
       </div>
 
+      <!-- PLANEAMENTO / METAS -->
       <div id="section-goals" class="page-section" style="display: none;">
         <header class="header-bar">
           <div>
             <h1>🎯 Planeamento de Metas</h1>
-            <p class="subtitle">Defina objetivos, veja quanto poupar por mês/semana e se cabe no seu orçamento</p>
+            <p class="subtitle">Defina objetivos e acompanhe o progresso de poupança</p>
           </div>
         </header>
 
         <section class="panel-card">
-          <h2>1. Criar Planeamento</h2>
+          <h2>Criar Planeamento</h2>
           <form id="form-goal">
             <div class="form-grid">
-              <input type="text" id="goal-name" placeholder="Nome da Meta (ex: Comprar carro)" required>
+              <input type="text" id="goal-name" placeholder="Nome da Meta" required>
               <input type="number" step="0.01" id="goal-target" placeholder="Valor Desejado (R$)" required>
-              <input type="number" step="0.01" id="goal-saved-initial" placeholder="Valor Já Guardado (R$, opcional)">
-              <input type="date" id="goal-start-date" title="Data de Início (opcional, padrão: hoje)">
-              <input type="date" id="goal-deadline" placeholder="Data Limite (opcional)">
+              <input type="number" step="0.01" id="goal-saved-initial" placeholder="Valor Já Guardado (R$)">
+              <input type="date" id="goal-deadline" placeholder="Data Limite">
             </div>
-            <div id="goal-planning-preview" class="goal-planning-box" style="display: none;"></div>
-            <button type="submit" class="btn-add">Criar Planeamento</button>
+            <button type="submit" class="btn-add">Criar Meta</button>
           </form>
         </section>
 
         <section class="panel-card">
-          <h2>3. Análise Financeira Geral</h2>
-          <p class="subtitle" style="margin-bottom: 14px;">Calculada a partir das suas receitas e despesas registadas na aplicação.</p>
-          <div id="planning-summary-box" class="goal-planning-box">Registe as suas transações para ver a análise.</div>
-        </section>
-
-        <section class="panel-card">
-          <h2>2. Cálculo Automático & 4. Progresso</h2>
+          <h2>O Seu Progresso</h2>
           <div id="goals-list-container" class="cards-grid"></div>
         </section>
       </div>
 
+      <!-- INVESTIMENTOS & REBALANCEAMENTO -->
       <div id="section-investments" class="page-section" style="display: none;">
         <header class="header-bar">
           <div>
-            <h1>📈 Investimentos</h1>
-            <p class="subtitle">Acompanhe ações, fundos imobiliários, renda fixa e outros ativos</p>
+            <h1>📈 Investimentos & Rebalanceamento</h1>
+            <p class="subtitle">Acompanhe ativos e consulte a alocação da sua carteira</p>
           </div>
         </header>
 
@@ -669,20 +637,24 @@
         </section>
 
         <section class="panel-card">
+          <h2>Gráfico de Alocação Atual da Carteira</h2>
+          <canvas id="rebalanceChart"></canvas>
+        </section>
+
+        <section class="panel-card">
           <h2>Novo Ativo</h2>
           <form id="form-investment">
             <div class="form-grid">
-              <input type="text" id="inv-name" placeholder="Nome do Ativo (ex: PETR4, Tesouro Direto)" required>
+              <input type="text" id="inv-name" placeholder="Nome do Ativo" required>
               <select id="inv-type">
                 <option value="Ação">Ação</option>
                 <option value="FII">Fundo Imobiliário</option>
                 <option value="Renda Fixa">Renda Fixa</option>
                 <option value="Tesouro">Tesouro Direto</option>
                 <option value="Cripto">Criptomoeda</option>
-                <option value="Outro">Outro</option>
               </select>
               <input type="number" step="0.00000001" id="inv-qty" placeholder="Quantidade" required>
-              <input type="number" step="0.01" id="inv-avg-price" placeholder="Preço Médio de Compra (R$)" required>
+              <input type="number" step="0.01" id="inv-avg-price" placeholder="Preço Médio (R$)" required>
               <input type="number" step="0.01" id="inv-current-price" placeholder="Preço Atual (R$)" required>
             </div>
             <button type="submit" class="btn-add">Adicionar Ativo</button>
@@ -711,65 +683,43 @@
         </section>
       </div>
 
+      <!-- SIMULADOR -->
       <div id="section-simulator" class="page-section" style="display: none;">
         <header class="header-bar">
           <div>
             <h1>Simulador de Juros Compostos</h1>
-            <p class="subtitle">Projete o crescimento de longo prazo do seu património financeiro</p>
+            <p class="subtitle">Projete o crescimento de longo prazo do seu património</p>
           </div>
         </header>
 
         <section class="panel-card">
-          <h2>Parâmetros da Projeção</h2>
           <form id="form-simulator" onsubmit="event.preventDefault(); calcularJurosCompostos();">
             <div class="form-grid">
-              <div class="input-group" style="margin-bottom:0;">
-                <label>Capital Inicial (R$)</label>
-                <input type="number" step="0.01" id="sim-initial" value="10000" required>
-              </div>
-              <div class="input-group" style="margin-bottom:0;">
-                <label>Aporte Mensal (R$)</label>
-                <input type="number" step="0.01" id="sim-monthly" value="1000" required>
-              </div>
-              <div class="input-group" style="margin-bottom:0;">
-                <label>Rentabilidade Anual (% a.a.)</label>
-                <input type="number" step="0.1" id="sim-rate" value="10.5" required>
-              </div>
-              <div class="input-group" style="margin-bottom:0;">
-                <label>Período (Anos)</label>
-                <input type="number" id="sim-years" value="10" required>
-              </div>
+              <input type="number" step="0.01" id="sim-initial" value="10000" required>
+              <input type="number" step="0.01" id="sim-monthly" value="1000" required>
+              <input type="number" step="0.1" id="sim-rate" value="10.5" required>
+              <input type="number" id="sim-years" value="10" required>
             </div>
-            <button type="submit" class="btn-add" style="margin-top: 20px;">Calcular Projeção</button>
+            <button type="submit" class="btn-add" style="margin-top: 15px;">Calcular Projeção</button>
           </form>
-
           <div class="simulator-results-grid">
-            <div class="simulator-result-card">
-              <span>Valor Total Acumulado</span>
-              <h4 id="sim-res-total" style="color: var(--accent-purple);">R$ 0,00</h4>
-            </div>
-            <div class="simulator-result-card">
-              <span>Total Investido</span>
-              <h4 id="sim-res-invested">R$ 0,00</h4>
-            </div>
-            <div class="simulator-result-card">
-              <span>Rendimento em Juros</span>
-              <h4 id="sim-res-interest" style="color: #10b981;">R$ 0,00</h4>
-            </div>
+            <div class="simulator-result-card"><span>Total Acumulado</span><h4 id="sim-res-total">R$ 0,00</h4></div>
+            <div class="simulator-result-card"><span>Total Investido</span><h4 id="sim-res-invested">R$ 0,00</h4></div>
+            <div class="simulator-result-card"><span>Juros</span><h4 id="sim-res-interest" style="color: #10b981;">R$ 0,00</h4></div>
           </div>
         </section>
 
         <section class="panel-card">
-          <h2>Evolução Patrimonial Anual</h2>
           <canvas id="simulatorChart"></canvas>
         </section>
       </div>
 
+      <!-- CONTAS & CARTEIRAS -->
       <div id="section-accounts" class="page-section" style="display: none;">
         <header class="header-bar">
           <div>
             <h1>💼 Contas & Carteiras</h1>
-            <p class="subtitle">Separe o seu dinheiro por conta à ordem, cartão, carteira, etc.</p>
+            <p class="subtitle">Gerencie o saldo de instituições bancárias e carteiras virtuais</p>
           </div>
         </header>
 
@@ -777,7 +727,7 @@
           <h2>Nova Conta</h2>
           <form id="form-account">
             <div class="form-grid">
-              <input type="text" id="account-name" placeholder="Nome da Conta (ex: Banco X, Carteira)" required>
+              <input type="text" id="account-name" placeholder="Nome da Conta" required>
               <input type="number" step="0.01" id="account-initial" placeholder="Saldo Inicial (R$)" value="0">
             </div>
             <button type="submit" class="btn-add">Criar Conta</button>
@@ -788,20 +738,9 @@
           <h2>As Suas Contas</h2>
           <div id="accounts-list-container" class="cards-grid"></div>
         </section>
-
-        <section class="panel-card">
-          <h2>👨‍👩‍👧 Conta Partilhada</h2>
-          <p class="subtitle" style="margin-bottom: 14px;">Convide o seu cônjuge ou familiar para acompanhar as suas finanças (a pessoa precisa de já ter uma conta no FluxoPro).</p>
-          <form id="form-share-invite">
-            <div class="form-grid">
-              <input type="email" id="share-email" placeholder="E-mail da pessoa" required>
-              <button type="submit" class="btn-add">Convidar</button>
-            </div>
-          </form>
-          <div id="shares-list-container" style="margin-top: 16px;"></div>
-        </section>
       </div>
 
+      <!-- PERFIL -->
       <div id="section-profile" class="page-section" style="display: none;">
         <header class="header-bar">
           <div>
@@ -814,42 +753,17 @@
           <h2>Dados da Sua Conta</h2>
           <form id="form-update-profile">
             <div class="form-grid-profile">
-              <div class="input-group">
-                <label>Nome Completo</label>
-                <input type="text" id="edit-name" required>
-              </div>
-              <div class="input-group">
-                <label>E-mail (Inalterável)</label>
-                <input type="email" id="edit-email" disabled style="opacity: 0.6; cursor: not-allowed;">
-              </div>
-              <div class="input-group">
-                <label>NIF ou Documento</label>
-                <input type="text" id="edit-doc" required maxlength="18">
-              </div>
-              <div class="input-group">
-                <label>Telefone / WhatsApp</label>
-                <input type="tel" id="edit-phone" required maxlength="15">
-              </div>
-              <div class="input-group">
-                <label>Perfil de Utilização</label>
-                <select id="edit-profile" class="select-styled">
-                  <option value="Pessoal">Pessoa Singular (Uso Pessoal)</option>
-                  <option value="Empresarial">Pessoa Coletiva (Empresa / Empresário)</option>
-                </select>
-              </div>
+              <div class="input-group"><label>Nome Completo</label><input type="text" id="edit-name" required></div>
+              <div class="input-group"><label>E-mail</label><input type="email" id="edit-email" disabled style="opacity: 0.6;"></div>
+              <div class="input-group"><label>Documento / NIF</label><input type="text" id="edit-doc" required maxlength="18"></div>
+              <div class="input-group"><label>Telefone</label><input type="tel" id="edit-phone" required maxlength="15"></div>
             </div>
-            <button type="submit" class="btn-primary" style="margin-top: 10px;">Atualizar Os Meus Dados</button>
+            <button type="submit" class="btn-primary">Atualizar Dados</button>
           </form>
-        </section>
-
-        <section class="panel-card max-w-2xl">
-          <h2>🔐 Autenticação em Duas Etapas (2FA)</h2>
-          <p class="subtitle" id="mfa-status-text" style="margin-bottom: 16px;">A verificar estado...</p>
-          <div id="mfa-setup-container"></div>
         </section>
       </div>
 
-      <!-- NOVO: CENTRAL DE SUPORTE VIP TOTALMENTE CONECTADA -->
+      <!-- SUPORTE -->
       <div id="section-support" class="page-section" style="display: none;">
         <header class="header-bar">
           <div>
@@ -876,14 +790,13 @@
 
         <section class="panel-card" style="margin-top: 30px;">
           <h2>📩 Enviar Mensagem Direta</h2>
-          <p class="subtitle" style="margin-bottom: 16px;">Preencha o formulário abaixo para abrir um pedido de suporte prioritário.</p>
           <form id="form-support-msg" onsubmit="enviarMensagemSuporte(event)">
             <div class="form-grid">
               <input type="text" id="sup-name" placeholder="O seu nome" required>
               <input type="email" id="sup-email" placeholder="O seu e-mail de contacto" required>
-              <textarea id="sup-message" placeholder="Escreva a sua mensagem ou dúvida aqui..." rows="4" style="grid-column: span 2; background: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--text-main); padding: 12px; border-radius: 8px; font-family: inherit; resize: vertical;" required></textarea>
+              <textarea id="sup-message" placeholder="Escreva a sua mensagem..." rows="4" style="grid-column: span 2; background: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--text-main); padding: 12px; border-radius: 8px;" required></textarea>
             </div>
-            <button type="submit" class="btn-add" style="margin-top: 15px;">Enviar Mensagem ao Suporte</button>
+            <button type="submit" class="btn-add" style="margin-top: 15px;">Enviar Mensagem</button>
           </form>
         </section>
       </div>
