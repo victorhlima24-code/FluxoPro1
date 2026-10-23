@@ -24,6 +24,7 @@ let cards = [];
 let subscriptions = [];
 let splitExpenses = [];
 let lastFilteredItems = [];
+let pendingMfaFactorId = null;
 
 let barChartInstance = null;
 let doughnutChartInstance = null;
@@ -34,7 +35,13 @@ let simulatorChartInstance = null;
 let rebalanceChartInstance = null;
 let pendingDeleteAction = null;
 
+const EXCLUSION_UNDO_TIME_MS = 6000;
+let pendingExclusions = {};
 let exchangeRates = { BRL: 1 };
+let exchangeRatesLoaded = false;
+let lastAiInsightTime = 0;
+const AI_INSIGHT_INTERVAL_MS = 5 * 60 * 1000;
+let seriesInEditing = null;
 
 // --- NOTIFICAÇÕES PUSH NATIVAS ---
 window.requestPushNotificationPermission = function() {
